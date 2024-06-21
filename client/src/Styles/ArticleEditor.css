@@ -1,0 +1,46 @@
+/* ArticleEditor.css */
+
+/* Fieldset styling */
+.fieldset {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Background color */
+  }
+  
+  .fieldset legend {
+    padding: 0 10px;
+    font-weight: bold;
+    color: #333; /* Font color */
+  }
+  
+  /* Form control styling */
+  .form-control {
+    border-color: #ddd;
+  }
+  
+  /* Floating label styling */
+  .floating-label {
+    color: #555; /* Font color */
+  }
+  
+  /* Textarea styling */
+  textarea.form-control {
+    resize: none; /* Prevent textarea resize */
+  }
+  
+  /* Animation for word count */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  .word-count {
+    animation: fadeIn 0.5s ease-out; /* Animation */
+  }
+  
