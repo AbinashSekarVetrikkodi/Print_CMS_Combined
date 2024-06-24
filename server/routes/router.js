@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Controller = require('../controller/controller');
+const Controller = require('../Controller/controller');
 
 router.get('/getproducts', Controller.getProducts);
 router.post('/product_name_api', Controller.product_name_api);
@@ -36,6 +36,10 @@ router.get('/reporter/pages-withoutzones', Controller.pagesWithoutZones);
 router.get('/reporter/images', Controller.getImages);
 router.get('/reporter/pdf', Controller.getPdf);
 router.get('/reporter/plandata', Controller.getPlanData);
+//------------------Article User----------
+
+router.get('/article/articleuserids', Controller.articleuserids);
+
 
 
 //-------------Revoke Api ---------------

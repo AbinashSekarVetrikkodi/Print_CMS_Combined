@@ -31,15 +31,15 @@ const Sidebar = () => {
             <NavLinkWithActive to="/article-view" onClick={handleClose}>
               <FaAddressBook /> Article View
             </NavLinkWithActive>
-            <NavLinkWithActive to="/profile" onClick={handleClose}>
+            {/* <NavLinkWithActive to="/profile" onClick={handleClose}>
               <FaUser /> Profile
-            </NavLinkWithActive>
+            </NavLinkWithActive> */}
             <NavLinkWithActive to="/thumbnail" onClick={handleClose}>
               <FaUser /> Thumbnail
             </NavLinkWithActive>
-            <NavLinkWithActive to="/revoke" onClick={handleClose}>
+            {/* <NavLinkWithActive to="/revoke" onClick={handleClose}>
               <FaAddressBook /> Revoke
-            </NavLinkWithActive>
+            </NavLinkWithActive> */}
           </nav>
         </div>
       </div>

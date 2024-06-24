@@ -554,25 +554,37 @@ exports.getImageName = async (req, res) => {
 
 exports.fetchnews = async (req, res) => {
   const { selectedDate, product, zone, layout, pagename } = req.body;
-
+ 
   try {
     const productid = await product_Id(product);
     const zonecode = await Zone_Code(zone);
-
+ 
     // Check if productid and zonecode are valid
     if (!productid || !zonecode) {
       return res.status(404).json({ error: 'Invalid product or zone' });
     }
-
+ 
     const query = `SELECT * FROM news_details_new WHERE IssueDate = ? AND Product = ? AND Zone_Code = ? AND desk_type = ? AND Page_name = ?`;
     const [rows] = await pool.query(query, [selectedDate, product, zonecode, layout, pagename]);
-
+ 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'News not found' });
     }
-
-    res.json(rows);
-    console.log(rows);
+ 
+    // Decode Base64 encoded fields in each row
+    const decodedRows = rows.map(row => {
+      const decodedRow = {};
+      for (let key in row) {
+        if (typeof row[key] === 'string' && isBase64(row[key])) {
+          decodedRow[key] = decodeFromBase64(row[key]);
+        } else {
+          decodedRow[key] = row[key];
+        }
+      }
+      return decodedRow;
+    });
+ 
+    res.json(decodedRows);
   } catch (error) {
     console.error('Error fetching news:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -831,6 +843,22 @@ exports.getPlanData = async (req, res) => {
     res.json(results);
   } catch (error) {
     console.error("Database query failed:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+//---------------------------Article user api
+
+exports.articleuserids = async (req, res) => {
+  
+  const query = `
+    SELECT User_ID, User_name FROM mas_user m;
+  `;
+ 
+  try {
+    const [results] = await pool.query(query);
+    res.json(results);
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };

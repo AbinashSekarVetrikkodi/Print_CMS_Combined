@@ -12,24 +12,45 @@
   .fieldset legend {
     padding: 0 10px;
     font-weight: bold;
-    color: #333; /* Font color */
+    color: #015BAB; /* Font color */
   }
   
   /* Form control styling */
   .form-control {
     border-color: #ddd;
   }
+
+  .S-heading {
+    color: #015BAB;
+    font-size: 16px;
+    font-weight: bold;
+  }
   
   /* Floating label styling */
   .floating-label {
-    color: #555; /* Font color */
+    color: #015BAB; /* Font color */
   }
   
   /* Textarea styling */
   textarea.form-control {
     resize: none; /* Prevent textarea resize */
   }
-  
+
+  .table-responsive table thead tr th{
+    text-align: center;
+    background-color: #015BAB;
+    font-weight: bold;
+    color: white;
+}
+
+.table-responsive table thead tr th .ST-heading{
+  width:fit-content;
+}
+
+.table-responsive table tbody tr td .ST-content{
+  width:fit-content;
+}
+
   /* Animation for word count */
   @keyframes fadeIn {
     0% {

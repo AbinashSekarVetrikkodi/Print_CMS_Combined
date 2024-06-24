@@ -7,7 +7,6 @@ import '../Styles/ArticleEditor.css';
 export default function ArticleView() {
   const navigate = useNavigate();
 
-  // Check session storage for emp_email
   const emp_id = sessionStorage.getItem('emp_id');
 
   const getDetail = async () => {
@@ -31,12 +30,11 @@ export default function ArticleView() {
     }
   }, [emp_id, navigate]);
 
-  // Get today's date in the format YYYY-MM-DD
   const getTodayDate = () => {
     const today = new Date();
     const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0!
-    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()+1).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   };
 
@@ -54,6 +52,10 @@ export default function ArticleView() {
   const [assignUsers, setAssignUsers] = useState([]);
   const [pageNames, setPageNames] = useState([]);
   const [news, setNews] = useState([]);
+  const [usersData, setUsersData] = useState([]);
+
+  const userRole = sessionStorage.getItem('userRole');
+  // console.log('userRole', userRole);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -76,6 +78,19 @@ export default function ArticleView() {
 
     fetchProducts();
     fetchZones();
+  }, []);
+
+  useEffect(() => {
+    const fetchUsersData = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_IPCONFIG}api/article/articleuserids`);
+        setUsersData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchUsersData();
   }, []);
 
   useEffect(() => {
@@ -149,8 +164,8 @@ export default function ArticleView() {
   const handleSubmit = async () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_IPCONFIG}api/fetchnews`, formData);
-      console.log(response.data);
       setNews(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error('Error fetching news', error);
     }
@@ -158,131 +173,180 @@ export default function ArticleView() {
 
   const articleView = (articleId, articleIssueDate) => {
     try {
-      console.log(articleId);
       navigate(`/article-editor/${articleId}/${articleIssueDate}`);
     } catch (error) {
       console.error('Error navigating to article view', error);
     }
   };
 
+  const userMap = usersData.reduce((acc, user) => {
+    acc[user.User_ID] = user.User_name;
+    return acc;
+  }, {});
+
+  const getUserName = (userId) => userMap[userId] || userId;
+
+  const statusMap = [
+    { stage: 'Submit', status: 'T' },
+    { stage: 'Approved', status: 'P' },
+    { stage: 'Assigned', status: 'S' },
+    { stage: 'PR Done', status: 'D' },
+    { stage: 'Finalize', status: 'A' },
+    { stage: 'Saved', status: 'F' }
+  ].reduce((acc, item) => {
+    acc[item.status] = item.stage;
+    return acc;
+  }, {});
+
+  const getStatusStage = (status) => statusMap[status] || status;
+
+  const newsLength = news.length;
+
+  const canEdit = (userRole, status) => {
+    if (userRole === 'RPT' && status === 'T' || status === 'F') return true;
+    if (userRole === 'CHRPT' && (status === 'T' || status === 'P')) return true;
+    if (userRole === 'SPSUBEDT' && status === 'S') return true;
+    if (userRole === 'SPEDT' && (status === 'P' || status === 'D')) return true;
+    return false;
+  };
+
   return (
-    //added css
     <div className='main-content'>
-    <Container>
-      <fieldset className="fieldset">
-        <legend>Story Editor</legend>
-        <Row className="mb-3">
-          <Col sm={4} className="mb-3">
-            <Form.Group>
-              <Form.Control
-                type="date"
-                value={formData.selectedDate}
-                onChange={handleDateChange}
-              />
-            </Form.Group>
-          </Col>
+      <div>
+        <fieldset className="fieldset">
+          <legend>Stories List</legend>
+          <Row className="mb-3">
+            <Col sm={4} className="mb-3">
+              <Form.Group>
+                <Form.Control
+                  type="date"
+                  value={formData.selectedDate}
+                  onChange={handleDateChange}
+                />
+              </Form.Group>
+            </Col>
 
-          <Col sm={4} className="mb-3">
-            <Form.Select aria-label="Product select example" onChange={handleProductChange} value={formData.product}>
-              <option>Select Product</option>
-              {products.map((productName, index) => (
-                <option key={index} value={productName}>
-                  {productName}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-          <Col sm={4} className="mb-3">
-            <Form.Select
-              aria-label="Zone select example"
-              onChange={handleZoneChange}
-              value={formData.zone}
-            >
-              <option>Zone</option>
-              {zones.map((zoneName, index) => (
-                <option key={index} value={zoneName}>
-                  {zoneName}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-        </Row>
+            <Col sm={4} className="mb-3">
+              <Form.Select aria-label="Product select example" onChange={handleProductChange} value={formData.product}>
+                <option>Select Product</option>
+                {products.map((productName, index) => (
+                  <option key={index} value={productName}>
+                    {productName}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+            <Col sm={4} className="mb-3">
+              <Form.Select
+                aria-label="Zone select example"
+                onChange={handleZoneChange}
+                value={formData.zone}
+              >
+                <option>Zone</option>
+                {zones.map((zoneName, index) => (
+                  <option key={index} value={zoneName}>
+                    {zoneName}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
+          </Row>
 
-        <Row className="mb-3">
-          <Col sm={4} className="mb-3">
-            <Form.Select
-              aria-label="Layout desk select example"
-              onChange={handleLayoutChange}
-              value={formData.layout}
-            >
-              <option>No Layout selected</option>
-              {layouts.map((layout, index) => (
-                <option key={index} value={layout.desk_name}>
-                  {layout.desk_name}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
+          <Row className="mb-3">
+            <Col sm={4} className="mb-3">
+              <Form.Select
+                aria-label="Layout desk select example"
+                onChange={handleLayoutChange}
+                value={formData.layout}
+              >
+                <option>No Layout selected</option>
+                {layouts.map((layout, index) => (
+                  <option key={index} value={layout.desk_name}>
+                    {layout.desk_name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
 
-          <Col sm={4}>
-            <Form.Select
-              aria-label="Page Name select example"
-              value={formData.pagename}
-              onChange={(e) => setFormData({ ...formData, pagename: e.target.value })}
-            >
-              <option>Page Name</option>
-              {pageNames.map((page, index) => (
-                <option key={index} value={page}>
-                  {page}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-        </Row>
-      </fieldset>
-      <Button onClick={handleSubmit}>View</Button>
+            <Col sm={4}>
+              <Form.Select
+                aria-label="Page Name select example"
+                value={formData.pagename}
+                onChange={(e) => setFormData({ ...formData, pagename: e.target.value })}
+              >
+                <option>Page Name</option>
+                {pageNames.map((page, index) => (
+                  <option key={index} value={page}>
+                    {page}
+                  </option>
+                ))}
+              </Form.Select>
+            </Col>
 
-      <fieldset className="fieldset">
-        <legend>Content Details</legend>
+            
+          </Row>
+          <Button onClick={handleSubmit} style={{backgroundColor:'#015BAB'}}>View</Button>
+        </fieldset>
+        
 
-        <div className="table-responsive">
-          <Table striped bordered hover responsive="md">
-            <thead>
-              <tr>
-                {/* <th>Parent Id</th> */}
-                <th>Story Ref Name</th>
-                <th>Zone</th>
-                <th>IssueDate</th>
-                <th>Page</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {news.length > 0 ? news.map((article, index) => (
-                <tr key={index}>
-                  {/* <td>{article.parent_object_id}</td> */}
-                  <td>{article.Ref_story_name}</td>
-                  <td>{article.Zone_Code}</td>
-                  <td>{article.IssueDate}</td>
-                  <td>{article.Page_name}</td>
-                  <td>{article.Status}</td>
-                  <td>
-                    <Button variant="primary" size="sm" onClick={() => articleView(article.parent_object_id, article.IssueDate)}>View</Button>{' '}
-                    <Button variant="warning" size="sm" onClick={() => articleView(article.parent_object_id, article.IssueDate)} >Edit</Button>{' '}
-                    <Button variant="danger" size="sm">Delete</Button>{' '}
-                  </td>
-                </tr>
-              )) : (
+        <fieldset className="fieldset">
+          <legend >Stories Details</legend>
+
+          <div className='S-heading'>
+            Total Stories: {newsLength}
+          </div>
+
+          <div className="table-responsive">
+            <Table striped bordered hover responsive="md">
+              <thead>
                 <tr>
-                  <td colSpan="8" className="text-center">No Articles Found</td>
+                  <th className='ST-heading'>Heading</th>
+                  <th>Created</th>
+                  <th>Assigned</th>
+                  <th>Reporter</th>
+                  <th>Ch.Reporter</th>
+                  <th>Sub Editor</th>
+                  <th>SP Sub Editor</th>
+                  <th>Editor</th>
+                  <th>SP Editor</th>
+                  <th>Page</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
-              )}
-            </tbody>
-          </Table>
-        </div>
-      </fieldset>
-    </Container>
+              </thead>
+              <tbody>
+                {news.length > 0 ? news.map((article, index) => (
+                  <tr key={index}>
+                    <td className='ST-content'>{article.Head}</td>
+                    <td>{getUserName(article.ArticleCreatedUser)}</td>
+                    <td>{getUserName(article.Assigned_USER)}</td>
+                    <td>{getUserName(article.Report_User)}</td>
+                    <td>{getUserName(article.Chief_Report_User)}</td>
+                    <td>{getUserName(article.Sub_Editorial_User)}</td>
+                    <td>{getUserName(article.SP_Sub_Editor)}</td>
+                    <td>{getUserName(article.Editorial_User)}</td>
+                    <td>{getUserName(article.SP_Editor)}</td>
+                    <td>{article.Page_name}</td>
+                    <td>{getStatusStage(article.Status)}</td>
+                    <td>
+                      <Button variant="primary" size="sm" onClick={() => articleView(article.parent_object_id, article.IssueDate)}>View</Button>{' '}
+                      {canEdit(userRole, article.Status) && (
+                        <Button variant="warning" size="sm" onClick={() => articleView(article.parent_object_id, article.IssueDate)}>Edit</Button>
+                      )}
+                      {' '}
+                      {/* <Button variant="danger" size="sm">Delete</Button> */}
+                    </td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="10" className="text-center">No Articles Found</td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
+        </fieldset>
+      </div>
     </div>
   );
 }

@@ -127,7 +127,7 @@ const Thumbnail = () => {
         );
 
         setThumbnails("");
-        console.log(imageUrls);
+        // console.log(imageUrls);
 
         try {
           const thumbnails = await Promise.all(
@@ -199,7 +199,7 @@ const Thumbnail = () => {
     }
   };
 
-  console.log("thumbnails", thumbnails);
+  // console.log("thumbnails", thumbnails);
 
   useEffect(() => {
     if (initialThumbnails.length > 0 && plan.length > 0) {
@@ -272,7 +272,7 @@ const Thumbnail = () => {
         pageId: item.Page_Name,
       }));
       setPages(pages);
-      console.log(pages);
+      // console.log(pages);
       return pages;
     } catch (error) {
       console.error("Error fetching pages:", error);
