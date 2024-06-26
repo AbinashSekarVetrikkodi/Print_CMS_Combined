@@ -19,12 +19,13 @@ router.post('/assignuser',Controller.User_Id_api);
 
 router.post('/uploadImages',Controller.imageUploadHandler)
 router.post('/insertArticle',Controller.insertArticle)
+router.post('/updateArticle',Controller.updateArticle)
 router.post('/fetchnews/id',Controller.getNewsById)
 router.get('/getImageName', Controller.getImageName)
 router.post('/fetchnews', Controller.fetchnews)
 router.post('/revokepage', Controller.fetchrevokepage)
 router.post('/getUser', Controller.userdetail)
-
+router.post('/user', Controller.adAuth)
 
 
 //-----------Thumbnail  Api -------------------

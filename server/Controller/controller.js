@@ -13,14 +13,20 @@ function encodeToBase64(text) {
   return buffer.toString('base64');
 }
 
-// Function to decode Base64 encoded text
 function decodeFromBase64(base64Text) {
-  const buffer = Buffer.from(base64Text, 'base64');
-  return buffer.toString('utf-8');
+  try {
+    const buffer = Buffer.from(base64Text, 'base64');
+    return buffer.toString('utf-8');
+  } catch (err) {
+    console.error('Error decoding Base64:', err);
+    return base64Text; // Return the original text if decoding fails
+  }
 }
 
-// Function to check if a string is Base64 encoded
 function isBase64(str) {
+  if (typeof str !== 'string' || str.length % 4 !== 0 || /[^A-Za-z0-9+/=]/.test(str)) {
+    return false;
+  }
   try {
     return Buffer.from(str, 'base64').toString('base64') === str;
   } catch (err) {
@@ -28,14 +34,14 @@ function isBase64(str) {
   }
 }
 
+
 //---Function to form a Image tag for total xml---------
 async function ImageCaption (imagename , imagecaption,foldername)
 {
-  // Split the imagename and imagecaption strings
+
   const splitImage = imagename.split('~');
   const splitCaption = imagecaption.split('/n');
 
-  // Initialize an empty string to hold the final HTML
   let totalImageTag = '';
 
   // Iterate over the images and captions, assuming captions are fewer or equal to images
@@ -50,8 +56,7 @@ async function ImageCaption (imagename , imagecaption,foldername)
     totalImageTag += imageTag;
   }
 
-  // Return or log the final HTML
-  console.log(totalImageTag);
+ console.log("totalImageTag :",totalImageTag);
   return totalImageTag;
 }
 
@@ -400,113 +405,211 @@ exports.getPageNumber = async (req, res) => {
 exports.insertArticle = async (req, res) => {
   const {
     product, layout, zone, storyto, pagename, Storyname, HeadKicker, Head, HeadDesk,
-    Byline, Dateline, paragraph, filenames, path, finalCaption
+    Byline, Dateline, paragraph, filenames, path, finalCaption, xml_parent_action, Status,
+    ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,Assigned_USER,SP_Sub_Editor
   } = req.body;
-
+ 
+  console.log("Received insert values:", {
+    product, layout, zone, storyto, pagename, Storyname, HeadKicker, Head, HeadDesk,
+    Byline, Dateline, paragraph, filenames, path, finalCaption, xml_parent_action, Status,
+    ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,Assigned_USER,SP_Sub_Editor
+  });
+ 
   try {
     const xmlNameValue = await xml_name();
-    console.log(xmlNameValue);
     const parentid = xmlNameValue;
-
-    // const productId = await product_Id(product);
+    console.log(parentid);
     const productId = product;
+   
     const zoneCode = await Zone_Code(zone);
+    console.log(zoneCode);
     const userId = await User_Id(storyto);
-    let ImageCaptionvalue = await ImageCaption(filenames,finalCaption,parentid)
-
-    if (!productId || !zoneCode || !userId) {
-      return res.status(400).json({ error: 'Invalid product, zone, or user' });
-    }
-
-
-    let TotalXml = ""; 
-    
-
-    if (HeadKicker != "" && HeadKicker != null)
-      TotalXml += "<head_kicker><span>" + HeadKicker.trim() + "</span></head_kicker>";
-    else
-      TotalXml += "<head_kicker><span>" + "" + "</span></head_kicker>";
-    if (Head != "")
-      TotalXml += "<head><span>" + Head + "</span></head>";
-    else
-      TotalXml += "<head><span>" + "" + "</span></head>";
-    if (HeadDesk != "" && HeadDesk != null)
-      TotalXml += "<head_deck><span>" + HeadDesk + "</span></head_deck>";
-    else
-      TotalXml += "<head_deck><span>" + "" + "</span></head_deck>";
-    if (Byline != "" && Byline != null)
-      TotalXml += "<byline><span>" + Byline + "</span></byline>";
-    else
-      TotalXml += "<byline><span>" + "" + "</span></byline>";
-    if (Dateline != "" && Dateline != null)
-      TotalXml += "<Dateline><span>" + Dateline + "</span></Dateline>";
-    else
-      TotalXml += "<Dateline><span>" + "" + "</span></Dateline>";
-    if (paragraph != "" && paragraph != null)
-      TotalXml += "<body><span>" + paragraph.trim() + "</span></body>";
-    else
-      TotalXml += "<body><span>" + "" + "</span></body>";
-
+    console.log(userId);
+ 
+    console.log("Image Filename :",filenames);
+    const ImageCaptionvalue = await ImageCaption(filenames, finalCaption, parentid);
+    console.log("Final Image formation tag:",ImageCaptionvalue);
+ 
+    // if (!productId || !zoneCode || !userId) {
+    //   return res.status(400).json({ error: 'Invalid product, zone, or user' });
+    // }
+ 
+    let TotalXml = "";
+ 
+    const addXmlTag = (tag, value) => {
+      TotalXml += `<${tag}><span>${value ? value.trim() : ""}</span></${tag}>`;
+    };
+ 
+    addXmlTag("head_kicker", HeadKicker);
+    addXmlTag("head", Head);
+    addXmlTag("head_deck", HeadDesk);
+    addXmlTag("byline", Byline);
+    addXmlTag("Dateline", Dateline);
+    addXmlTag("body", paragraph);
+ 
     TotalXml += ImageCaptionvalue;
-    TotalXml = encodeToBase64(TotalXml)
-
-
+    console.log("TotalXml :",TotalXml);
+    TotalXml = encodeToBase64(TotalXml);
+ 
+    // Interpolate values into the query string for debugging
     const query = `
       INSERT INTO news_details_new (
-        xml_name, bkp_xml_folder_date, xml_exported_dateTime, parent_object_id, Product, desk_type, Zone_Code, 
-        Created_user, Page_name, Ref_story_name, HeadKicker, Head, HeadDeck, byline, dateline, content, ArticleType, news_owner,
-        xml_parent_action, Article_Placed, quot_avail, Isprint, IsWeb, Status, IssueDate, Publication_Date, Images, Image_path,
-        caption, Image_Name, Total_Xml, Articles_Created,ArticleCreatedUser,Image_Type
-      ) VALUES (?, SYSDATE(), SYSDATE(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATE_ADD(CURDATE(), INTERVAL 1 DAY), DATE_ADD(CURDATE(), INTERVAL 1 DAY), ?, ?, ?, ?, ?, ?, ?,?)
+        xml_name, bkp_xml_folder_date, xml_exported_dateTime, parent_object_id, Product, desk_type, Zone_Code,
+        Created_user, Page_name, Ref_story_name, HeadKicker, Head, HeadDeck, byline, dateline, content,
+        ArticleType, news_owner, xml_parent_action, Article_Placed, quot_avail, IsPrint, IsWeb, Status,
+        IssueDate, Publication_Date,
+        Images, Image_path, caption, Image_Name, Total_Xml, Articles_Created, ArticleCreatedUser, Image_Type,
+        Chief_Report_User, Editorial_User, Report_User,Assigned_USER
+      ) VALUES (
+        '${xmlNameValue}', SYSDATE(), SYSDATE(), '${parentid}', '${productId}', '${layout}', '${zoneCode}',
+        '${ArticleCreatedUser}', '${pagename}', '${Storyname}', '${encodeToBase64(HeadKicker)}', '${encodeToBase64(Head)}','${encodeToBase64(HeadDesk)}', '${encodeToBase64(Byline)}', '${encodeToBase64(Dateline)}', '${encodeToBase64(paragraph)}',
+        'RE', 'TheHindu', '${xml_parent_action}', 'N', 'N', 'Y', 'Y', '${Status}',
+        DATE_ADD(CURDATE(), INTERVAL 1 DAY),DATE_ADD(CURDATE(), INTERVAL 1 DAY),
+        '${filenames}', '${path}', '${encodeToBase64(finalCaption)}', '${filenames}', '${TotalXml}',
+        '${ArticleCreatedUser}', '${ArticleCreatedUser}', 'RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~',
+        '${Chief_Report_User}', '${Editorial_User}', '${Report_User}','${Assigned_USER}'
+      )
     `;
-
-    const values = [
-      xmlNameValue, parentid, productId, layout, zoneCode, userId, pagename, Storyname, encodeToBase64(HeadKicker),
-      encodeToBase64(Head), encodeToBase64(HeadDesk), encodeToBase64(Byline), encodeToBase64(Dateline), encodeToBase64(paragraph),
-      "RE", "TheHindu", "Created", "N", "N", "Y", "Y", "A", filenames, path, encodeToBase64(finalCaption), filenames, TotalXml, zone, userId,"RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~"
-    ];
-
-    console.log("values:", values);
-
-    const [result] = await pool.execute(query, values);
+ 
+    // Log the query with values interpolated
+    console.log("Query with interpolated values:", query);
+ 
+    const [result] = await pool.execute(query);
     console.log('Insert result:', result);
-
+ 
     res.status(200).json({ message: 'Article inserted successfully' });
   } catch (error) {
-    console.error('Error inserting article:', error);
+    console.error('Error inserting article news:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 
 
+exports.updateArticle = async (req,res) => {
+  const {
+    xml_name, layout, zone, storyto, pagename, Ref_story_name, HeadKicker, Head, HeadDesk,
+    Byline, Dateline, paragraph, filenames, path, caption, xml_parent_action, Status,
+    ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,product,IssueDate,finalCaption,
+    SP_Editor,Assigned_USER,SP_Sub_Editor
+  } = req.body;
+
+  console.log("Received update values:", {
+    product, layout, zone, storyto, pagename, Ref_story_name, HeadKicker, Head, HeadDesk,
+    Byline, Dateline, paragraph, filenames, path, caption, xml_parent_action, Status,
+    ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,IssueDate,finalCaption,
+    SP_Editor,Assigned_USER,SP_Sub_Editor
+  });
+
+  try {
+
+    const productId = product;    
+    const zoneCode = await Zone_Code(zone);
+    const userId = await User_Id(storyto);
+
+   const finalCaptionString = Array.isArray(finalCaption) ? finalCaption.join(' ') : finalCaption;
+   console.log("finalCaptionString",finalCaptionString);
+
+   const updateCaption = (finalCaptionString && finalCaptionString.trim() !== "") ? finalCaptionString : caption;
+
+    const ImageCaptionvalue = await ImageCaption(filenames, updateCaption, xml_name);
+
+
+    let TotalXml = "";
+
+    const addXmlTag = (tag, value) => {
+      TotalXml += `<${tag}><span>${value ? value.trim() : ""}</span></${tag}>`;
+    };
+
+    addXmlTag("head_kicker", HeadKicker);
+    addXmlTag("head", Head);
+    addXmlTag("head_deck", HeadDesk);
+    addXmlTag("byline", Byline);
+    addXmlTag("Dateline", Dateline);
+    addXmlTag("body", paragraph);
+
+    TotalXml += ImageCaptionvalue;
+
+    console.log("TotalXml :",TotalXml);
+    TotalXml = encodeToBase64(TotalXml);
+
+
+// Interpolate values into the query string for debugging
+const query = `
+  UPDATE news_details_new 
+  SET 
+    Product = '${productId}', 
+    desk_type = '${layout}', 
+    Zone_Code = '${zoneCode}', 
+    Created_user = '${ArticleCreatedUser}', 
+    Page_name = '${pagename}', 
+    Ref_story_name = '${Ref_story_name}', 
+    HeadKicker = '${encodeToBase64(HeadKicker)}', 
+    Head = '${encodeToBase64(Head)}',
+    HeadDeck = '${encodeToBase64(HeadDesk)}', 
+    byline = '${encodeToBase64(Byline)}', 
+    dateline = '${encodeToBase64(Dateline)}', 
+    content = '${encodeToBase64(paragraph)}',  
+    xml_parent_action = '${xml_parent_action}', 
+    Status = '${Status}', 
+    caption = '${encodeToBase64(updateCaption)}', 
+    Total_Xml = '${TotalXml}', 
+    Articles_Created = '${ArticleCreatedUser}', 
+    ArticleCreatedUser = '${ArticleCreatedUser}', 
+    Chief_Report_User = '${Chief_Report_User}', 
+    Editorial_User = '${Editorial_User}', 
+    Report_User = '${Report_User}',
+    SP_Editor ='${SP_Editor}',
+    Assigned_USER='${Assigned_USER}',
+    SP_Sub_Editor='${SP_Sub_Editor}'
+    
+    WHERE 
+    IssueDate = '${IssueDate}' And xml_name = '${xml_name}'
+`;
+
+    // Log the query with values interpolated
+    console.log("Query with interpolated values:", query);
+
+    const [result] = await pool.execute(query);
+    console.log('update result:', result);
+
+    res.status(200).json({ message: 'Article updated successfully' });
+  } catch (error) {
+    console.error('Error inserting article news:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+
 exports.getNewsById = async (req, res) => {
   const { newsid, issuedate } = req.body;
   console.log(newsid);
+
   try {
     // Fetch only necessary columns and add pagination
     const query = `SELECT * FROM news_details_new WHERE parent_object_id = ? AND IssueDate = ?`;
-    const [rows, fields] = await pool.query(query, [newsid, issuedate]);
+    const [rows] = await pool.query(query, [newsid, issuedate]);
 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'News not found' });
     }
 
-    // Decode Base64 encoded fields in each row
+    // List of fields that need to be decoded
+    const fieldsToDecode = ['Total_Xml', 'HeadKicker', 'Head', 'HeadDeck', 'byline', 'dateline', 'content', 'caption'];
+
+    // Decode specified Base64 encoded fields in each row
     const decodedRows = rows.map(row => {
-      const decodedRow = {};
-      for (let key in row) {
-        if (typeof row[key] === 'string' && isBase64(row[key])) {
-          decodedRow[key] = decodeFromBase64(row[key]);
-        } else {
-          decodedRow[key] = row[key];
+      const decodedRow = { ...row }; // Copy original row
+      fieldsToDecode.forEach(field => {
+        if (row[field] && isBase64(row[field])) {
+          decodedRow[field] = decodeFromBase64(row[field]);
         }
-      }
+      });
       return decodedRow;
     });
 
     res.json(decodedRows);
-    console.log(decodedRows);
   } catch (error) {
     console.error('Error fetching news:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -552,25 +655,26 @@ exports.getImageName = async (req, res) => {
 };
 
 
+
 exports.fetchnews = async (req, res) => {
   const { selectedDate, product, zone, layout, pagename } = req.body;
- 
+
   try {
     const productid = await product_Id(product);
     const zonecode = await Zone_Code(zone);
- 
+
     // Check if productid and zonecode are valid
     if (!productid || !zonecode) {
       return res.status(404).json({ error: 'Invalid product or zone' });
     }
- 
-    const query = `SELECT * FROM news_details_new WHERE IssueDate = ? AND Product = ? AND Zone_Code = ? AND desk_type = ? AND Page_name = ?`;
-    const [rows] = await pool.query(query, [selectedDate, product, zonecode, layout, pagename]);
- 
+
+    const query = `SELECT * FROM news_details_new WHERE IssueDate = ? AND Product = ? AND Zone_Code = ? AND desk_type = ? `;
+    const [rows] = await pool.query(query, [selectedDate, product, zonecode, layout]);
+
     if (rows.length === 0) {
       return res.status(404).json({ error: 'News not found' });
     }
- 
+
     // Decode Base64 encoded fields in each row
     const decodedRows = rows.map(row => {
       const decodedRow = {};
@@ -583,7 +687,7 @@ exports.fetchnews = async (req, res) => {
       }
       return decodedRow;
     });
- 
+
     res.json(decodedRows);
   } catch (error) {
     console.error('Error fetching news:', error);
@@ -613,6 +717,7 @@ exports.fetchrevokepage = async (req, res) => {
 }
 
 
+
 exports.userdetail = async (req, res) => {
   const { User_Id } = req.body;
   console.log(User_Id);
@@ -634,6 +739,29 @@ exports.userdetail = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+
+exports.adAuth = async (req,res) =>{
+  try {
+    // Access the request body
+    const formData = req.body;
+    const formDataJSON = JSON.stringify(formData);
+    console.log(formData);
+
+    if (formData !== null) {
+      const redirectURL = `http://192.168.90.139:3000/user?formData=${encodeURIComponent(formDataJSON)}`;
+      return res.redirect(redirectURL);
+    }
+   
+    console.log(formDataJSON);
+
+    res.json({ message: 'Form data received successfully', formData: formDataJSON });
+  } catch (error) {
+    console.error('Error handling POST request:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
 
 
 
