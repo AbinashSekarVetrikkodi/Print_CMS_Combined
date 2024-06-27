@@ -902,28 +902,45 @@ exports.pagesWithoutZones = async (req, res) => {
  
 exports.getImages = async (req, res) => {
   const { date, zone, product, page, edition } = req.query;
- 
+
   console.log("Received request with date:", date, ", zone:", zone, ", product:", product, ", page:", page, ", and edition:", edition);
- 
+
+  // Check if all required parameters are present
   if (!date || !zone || !product || !page || !edition) {
     return res.status(400).json({ error: "Date, Zone, Product, Page, and Edition are required" });
   }
- 
+
+  // Construct the file path
   const filePath = path.join("\\\\192.168.90.32\\EditorialImage\\Image_Preview", date, zone, `${product}_${date}_${zone}_${edition}_${page}.jpg`);
- 
+
   try {
+    // Check if the file exists
     await fs.promises.access(filePath, fs.constants.F_OK);
+    // Get file statistics
     const stats = await fs.promises.stat(filePath);
     const modifiedDate = stats.mtime; // Modified date of the file
-    res.sendFile(filePath, { headers: { "Content-Type": "image/jpeg" } });
+
+    // Convert modifiedDate to local time zone string
+    const localDateString = modifiedDate.toLocaleString();
+
+    // Send the file with appropriate headers, including the modified date
+    res.sendFile(filePath, {
+      headers: {
+        "Content-Type": "image/jpeg",
+        "Last-Modified": localDateString // Add the modified date to the headers
+      }
+    });
   } catch (error) {
     if (error.code === 'ENOENT') {
+      // File not found
       res.status(404).json({ error: "Image not found" });
     } else {
+      // Other errors
       res.status(500).json({ error: "Failed to access the file" });
     }
   }
 };
+
 exports.getPdf = async (req, res) => {
   const { date, zone, product, page, edition } = req.query;
  

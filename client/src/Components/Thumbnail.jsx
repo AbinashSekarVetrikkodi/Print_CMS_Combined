@@ -109,8 +109,9 @@ const Thumbnail = () => {
   };
 
   const handleListClick = async () => {
-    if (selectedPage === "all page") {
-      // fetchAllData(initialIssueDate);
+    if (selectedPage === "") {
+      console.log("empty pageno");
+      fetchThumbnails (issueDate, zone, product, pages)
     } else {
       const formattedDate = formatDate(issueDate);
 
@@ -136,12 +137,12 @@ const Thumbnail = () => {
               try {
                 const response = await fetch(url);
                 if (response.ok) {
-                  const lastModified = response.headers.get("last-modified");
-                  const modifiedTime = lastModified ? extractTime(lastModified) : null;
+                  const lastModified = response.headers.get("Last-Modified");
+                  // const modifiedTime = lastModified ? extractTime(lastModified) : null;
                   return {
                     src: response.url,
                     alt: `${selectedPage}`,
-                    modifiedDate: modifiedTime,
+                    modifiedDate: lastModified,
                     zone: zones[index], // Add singleZone value to response object
                   };
                 } else {
@@ -173,14 +174,14 @@ const Thumbnail = () => {
         try {
           const response = await fetch(imageUrl);
           if (response.ok) {
-            const lastModified = response.headers.get("last-modified");
-            const modifiedTime = lastModified ? extractTime(lastModified) : null;
+            const lastModified = response.headers.get("Last-Modified");
+            // const modifiedTime = lastModified ? extractTime(lastModified) : null;
 
             setThumbnails([
               {
                 src: response.url,
                 alt: `${selectedPage}`,
-                modifiedDate: modifiedTime,
+                modifiedDate: lastModified,
                 zone: `${zone}`,
               },
             ]);
@@ -322,8 +323,8 @@ const Thumbnail = () => {
           try {
             const response = await fetch(imageUrl);
             if (response.ok) {
-              const lastModified = response.headers.get("last-modified");
-              const modifiedTime = lastModified ? extractTime(lastModified) : null;
+              const lastModified = response.headers.get("Last-Modified");
+              // const modifiedTime = lastModified ? extractTime(lastModified) : null;
               //   console.log(
               //     `Last modified for page ${page.pageId}: ${lastModified}`
               //   );
@@ -331,7 +332,7 @@ const Thumbnail = () => {
                 src: response.url,
                 alt: `${page.pageId}`,
                 zone: `${zone}`,
-                modifiedDate: modifiedTime, // Set the modifiedDate property
+                modifiedDate: lastModified, // Set the modifiedDate property
               };
             } else {
               console.error(
@@ -413,7 +414,7 @@ const Thumbnail = () => {
   return (
     <div className="main-content">
       <div className="t-container">
-        <h1>Thumb Nail Page View</h1>
+        <h1>Page Preview</h1>
         <div className="t-input-container">
           <div className="t-form-group">
             <label>Issue Date:</label>

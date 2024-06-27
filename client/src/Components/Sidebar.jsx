@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Offcanvas, Nav, Button } from 'react-bootstrap';
-import { FaBars, FaHome, FaInfo, FaAddressBook, FaUser } from 'react-icons/fa';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import '../Styles/Sidebar.css';
+import React, { useState } from "react";
+import { Offcanvas, Nav, Button } from "react-bootstrap";
+import { FaBars, FaHome, FaInfo, FaAddressBook, FaUser } from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import "../Styles/Sidebar.css";
 import HTTimage from "../Assest/HTTimage.png";
 
 const Sidebar = () => {
@@ -20,8 +20,8 @@ const Sidebar = () => {
     sessionStorage.removeItem("emp_id");
     sessionStorage.removeItem("emp_title");
     sessionStorage.removeItem("userRole");
-    Navigate('/')
-  }
+    Navigate("/");
+  };
 
   return (
     <>
@@ -39,30 +39,35 @@ const Sidebar = () => {
         <div className="sidebar-body">
           <nav className="nav flex-column">
             <NavLinkWithActive to="/add-article" onClick={handleClose}>
-              <FaHome /> Story Creation
+              <FaHome /> <div className="icon-style">Story Creation</div>
             </NavLinkWithActive>
             <NavLinkWithActive to="/article-view" onClick={handleClose}>
-              <FaAddressBook /> Stories List
+              <FaAddressBook /><div className="icon-style"> Stories List</div>
             </NavLinkWithActive>
             {/* <NavLinkWithActive to="/profile" onClick={handleClose}>
-              <FaUser /> Profile
-            </NavLinkWithActive> */}
-            <NavLinkWithActive to="/thumbnail" onClick={handleClose}>
-              <FaUser /> Page Preview
-            </NavLinkWithActive>
-            {/* <NavLinkWithActive to="/revoke" onClick={handleClose}>
-              <FaAddressBook /> Revoke
+              <FaUser /> <div className="icon-style">Profile</div>
+            </NavLinkWithActive> 
+            
+            <NavLinkWithActive to="/revoke" onClick={handleClose}>
+              <FaAddressBook /> <div className="icon-style">Revoke</div>
             </NavLinkWithActive> */}
 
-            <NavLinkWithActive
-              to="http://172.16.3.159:7156/"
-             target="_blank"
+            <a
+              href="http://172.16.3.159:7156/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-link" // Add any necessary class names for styling
             >
-              <FaUser /> Story Assign
+              <FaUser /> <div className="icon-style">Story Assign</div>
+            </a>
+
+            <NavLinkWithActive to="/thumbnail" onClick={handleClose}>
+              <FaUser /> <div className="icon-style">Page Preview</div>
             </NavLinkWithActive>
 
-            <Button variant='danger' onClick={handleLogout}>Logout</Button>
-
+            <Button className ='btn-logout'onClick={handleLogout}>
+              Logout
+            </Button>
           </nav>
         </div>
       </div>

@@ -44,7 +44,7 @@ app.post('/user', (req, res) => {
     console.log(formData);
 
     if (formData !== null) {
-      const redirectURL = `http://192.168.90.137:3000/user?formData=${encodeURIComponent(formDataJSON)}`;
+      const redirectURL = `http://192.168.90.161:3000/user?formData=${encodeURIComponent(formDataJSON)}`;
       return res.redirect(redirectURL);
     }
    
