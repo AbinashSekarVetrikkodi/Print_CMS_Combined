@@ -1,78 +1,137 @@
-/* ArticleEditor.css */
-
-/* Fieldset styling */
-.fieldset {
-    border: 1px solid #ddd;
-    padding: 1rem;
-    margin-top: 1rem;
-    border-radius: 5px;
-    background-color: #f9f9f9; /* Background color */
-  }
-  
-  .fieldset legend {
-    padding: 0;
-    font-weight: bold;
-    color: #015BAB; /* Font color */
-  }
-  
-  /* Form control styling */
-  .form-control {
-    border-color: #ddd;
-  }
-
-  .S-heading {
-    color: #015BAB;
-    font-size: 16px;
-    font-weight: bold;
-  }
-  
-  /* Floating label styling */
-  .floating-label {
-    color: #015BAB; /* Font color */
-  }
-  
-  /* Textarea styling */
-  textarea.form-control {
-    resize: none; /* Prevent textarea resize */
-  }
-
-  .table-responsive table thead tr th{
-    text-align: center;
-    background-color: #015BAB;
-    font-weight: bold;
-    color: white;
-    width: 50px;
+.f_fieldset {
+  padding: 0 1rem;
+  margin-top: 10px;
+  background-color: #f9f9f9;
 }
 
-.table-responsive table thead tr th .ST-heading{
-  width:fit-content;
+.f_fieldset legend {
+  padding: 0 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #015bab;
 }
 
-.table-responsive table tbody tr td .ST-content{
-  width:fit-content;
-  
+.form-control {
+  border-color: #ddd;
 }
-/* .mb-3{
-  width: max-content;
-  justify-items: center;
-} */
 
-.btn-edit{
+.S-heading {
+  color: #015bab;
   font-size: 16px;
   font-weight: bold;
-
 }
-  /* Animation for word count */
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
+
+.custom-select {
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+.floating-label {
+  color: #015bab;
+}
+
+textarea.form-control {
+  resize: none;
+}
+
+.table-responsive table thead tr th {
+  text-align: center;
+  background-color: #015bab;
+  font-weight: bold;
+  color: white;
+}
+
+.button_view {
+  margin-left: 10px;
+}
+/* .table-responsive table thead tr th.ST-heading, */
+
+.table-responsive table tbody tr td.ST-content {
+  /* width: fit-content; */
+  font-size: 13px;
+  font-weight: bolder;
+  /* max-width: min-content; */
+}
+
+.table-responsive table tbody tr td.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  border: none;
+}
+
+.table-responsive table tbody tr td.action-buttons .action-btn {
+  display: inline-block;
+  margin: 0 5px;
+  font-size: 1.1em;
+  font-weight: bold;
+  /* transition: transform 0.2s, background-color 0.3s; */
+}
+
+.table-responsive table tbody tr td.action-buttons .action-btn:hover {
+  transform: scale(1.1);
+  background-color: #007bff;
+  color: white;
+}
+
+.table-responsive table tbody tr td.action-buttons .action-btn:active {
+  transform: scale(0.9);
+  background-color: #0056b3;
+  color: white;
+}
+
+.table-responsive table tbody tr:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.3s ease;
+}
+
+.table-responsive table tbody tr td {
+  vertical-align: middle;
+}
+
+.table-responsive table tbody tr td,
+.table-responsive table thead tr th {
+  text-align: center;
+}
+
+.table-responsive table tbody tr td {
+  padding: 10px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* .action-btn {
+  font-size: 1.1em; 
+  font-weight: bold; 
+  transition: transform 0.2s, background-color 0.3s;
+} */
+
+.action-btn:hover {
+  transform: scale(1.1);
+  background-color: #007bff;
+  color: white;
+}
+
+.action-btn:active {
+  transform: scale(0.9);
+  background-color: #0056b3;
+  color: white;
+}
+
+
+
+/* Animation for word count */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
   }
-  
-  .word-count {
-    animation: fadeIn 0.5s ease-out; /* Animation */
+  100% {
+    opacity: 1;
   }
-  
+}
+
+.word-count {
+  animation: fadeIn 0.5s ease-out;
+}

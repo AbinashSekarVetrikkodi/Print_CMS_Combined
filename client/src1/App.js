@@ -5,11 +5,11 @@ import ArticleNew from './Components/ArticleNew';
 import ArticleView from './Components/ArticleView';
 import ArticleEditor from './Components/ArticleEditor';
 import Userdata from './Components/Userdata';
+import Testing from './Components/testing'
 import Login from './Components/Login';
+import  axios from 'axios';
 import  Thumbnail from './Components/Thumbnail';
-import Revoke from './Components/Revoke';
-import Footer from './Components/Footer';
-
+import Revoke from './Components/Revoke'
  
  
  
@@ -31,12 +31,12 @@ const App = () => {
           <Route path='add-article' element={<ArticleNew />} />
           <Route path='article-editor/:articleId/:articleIssueDate' element={<ArticleEditor />} />
           <Route path='article-view' element={<ArticleView />} />
-          <Route path='user' element={<Userdata />} />          
+          <Route path='user' element={<Userdata />} />
+          <Route path='test' element={<Testing />} />
           <Route path='thumbnail' element={<Thumbnail />} />
           <Route path='revoke' element={<Revoke />} />
         </Route>
-      </Routes>     
-      <Footer />  
+      </Routes>
     </BrowserRouter>
   );
 };

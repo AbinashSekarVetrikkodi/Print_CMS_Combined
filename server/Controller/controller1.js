@@ -5,14 +5,14 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const { log } = require('console');
-
-
+ 
+ 
 // Function to encode text to Base64
 function encodeToBase64(text) {
   const buffer = Buffer.from(text, 'utf-8');
   return buffer.toString('base64');
 }
-
+ 
 function decodeFromBase64(base64Text) {
   try {
     const buffer = Buffer.from(base64Text, 'base64');
@@ -22,7 +22,7 @@ function decodeFromBase64(base64Text) {
     return base64Text; // Return the original text if decoding fails
   }
 }
-
+ 
 function isBase64(str) {
   if (typeof str !== 'string' || str.length % 4 !== 0 || /[^A-Za-z0-9+/=]/.test(str)) {
     return false;
@@ -33,33 +33,34 @@ function isBase64(str) {
     return false;
   }
 }
-
-
+ 
+ 
 //---Function to form a Image tag for total xml---------
 async function ImageCaption (imagename , imagecaption,foldername)
 {
-
+ 
   const splitImage = imagename.split('~');
   const splitCaption = imagecaption.split('/n');
-
+ 
   let totalImageTag = '';
-
-  // Iterate over the images and captions, assuming captions are fewer or equal to images
+ 
+ 
   for (let i = 0; i < splitImage.length; i++) {
     const image = splitImage[i];
-    const caption = splitCaption[i] || ''; // Use empty string if caption is not available
-
+    console.log("image",image);
+    const caption = splitCaption[i] || '';
+ 
     // Construct the image tag with caption
     const imageTag = `<Image href='file:///D:/EditorialImage/${foldername}/HighRes/${image}' /><cutline><span>${caption}</span></cutline>`;
-    
+   
     // Append to the totalImageTag string
     totalImageTag += imageTag;
   }
-
- console.log("totalImageTag :",totalImageTag);
+ 
+  // console.log("totalImageTag :",totalImageTag);
   return totalImageTag;
 }
-
+ 
 // --------- Get Zone Code ---------
 async function Zone_Code(zoneName) {
   try {
@@ -71,15 +72,15 @@ async function Zone_Code(zoneName) {
     throw new Error('Failed to retrieve Zone_Code');
   }
 }
-
+ 
 exports.Zone_Name_api = async (req, res) => {
   const { zoneCode } = req.body;
   console.log(zoneCode);
-
+ 
   try {
     const query = "SELECT Zone_Name FROM parent_zone_mapping WHERE Zone_Code=?";
     const [rows] = await pool.query(query, [zoneCode]);
-
+ 
     if (rows.length > 0) {
       res.status(200).json(rows[0].Zone_Name);
     } else {
@@ -90,7 +91,7 @@ exports.Zone_Name_api = async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve Zone_Code' });
   }
 };
-
+ 
 // Get Product ID
 async function product_Id(productname) {
   try {
@@ -102,13 +103,13 @@ async function product_Id(productname) {
     throw new Error('Failed to retrieve Product_Id');
   }
 }
-
+ 
 exports.product_name_api = async (req, res) => {
   const { Product_Id } = req.body;
   try {
     const query = 'SELECT Product_Name FROM mas_product WHERE Product_Id = ?';
     const [rows] = await pool.query(query, [Product_Id]);
-
+ 
     if (rows.length > 0) {
       res.status(200).json(rows[0].Product_Name);
     } else {
@@ -119,8 +120,8 @@ exports.product_name_api = async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve Zone_Code' });
   }
 }
-
-
+ 
+ 
 // Get User ID
 async function User_Id(username) {
   try {
@@ -132,7 +133,7 @@ async function User_Id(username) {
     throw new Error('Failed to retrieve User_Id');
   }
 }
-
+ 
 exports.User_Id_api = async (req, res) => {
   const { username } = req.body;
   try {
@@ -144,9 +145,9 @@ exports.User_Id_api = async (req, res) => {
     throw new Error('Failed to retrieve User_Id');
   }
 }
-
-
-
+ 
+ 
+ 
 // Get XML name
 const xml_name = async () => {
   try {
@@ -159,24 +160,24 @@ const xml_name = async () => {
     throw new Error('Failed to retrieve xml_name');
   }
 }
-
-
-
-
+ 
+ 
+ 
+ 
 // Function to get the max ID
 const getMaxID = async () => {
   const [rows] = await pool.query("SELECT MAX(ID) AS maxID FROM Persons");
   return rows[0].maxID;
 };
-
-
+ 
+ 
 // Setup storage configuration for multer
 const getStorage = (maxID) => {
   const uploadFolderLowRes = path.join('\\\\192.168.90.32\\Images\\', `${maxID}\\LowRes`);
-
+ 
   // Ensure the LowRes directory is created
   fs.mkdirSync(uploadFolderLowRes, { recursive: true });
-
+ 
   return multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, uploadFolderLowRes);
@@ -187,17 +188,17 @@ const getStorage = (maxID) => {
     }
   });
 };
-
+ 
 const copyFilesToHighRes = async (maxID) => {
   const uploadFolderLowRes = path.join('\\\\192.168.90.32\\Images\\', `${maxID}\\LowRes`);
   const uploadFolderHighRes = path.join('\\\\192.168.90.32\\Images\\', `${maxID}\\HighRes`);
-
+ 
   // Ensure the HighRes directory is created
   fs.mkdirSync(uploadFolderHighRes, { recursive: true });
-
+ 
   // Read all files in the LowRes folder
   const files = await fs.promises.readdir(uploadFolderLowRes);
-
+ 
   // Copy each file to the HighRes folder
   for (const file of files) {
     const src = path.join(uploadFolderLowRes, file);
@@ -205,17 +206,17 @@ const copyFilesToHighRes = async (maxID) => {
     await fs.promises.copyFile(src, dest);
   }
 };
-
-
-
-
+ 
+ 
+ 
+ 
 // Controller function for handling image uploads
 exports.imageUploadHandler = async (req, res) => {
   try {
     const maxID = await getMaxID();
     const storage = getStorage(maxID);
     const upload = multer({ storage }).array('images');
-
+ 
     // Upload to LowRes folder
     upload(req, res, async (err) => {
       if (err) {
@@ -226,11 +227,11 @@ exports.imageUploadHandler = async (req, res) => {
         console.error('Unknown error:', err);
         return res.status(500).json({ error: 'An unknown error occurred while uploading files to LowRes' });
       }
-
+ 
       try {
         // Copy files from LowRes to HighRes
         await copyFilesToHighRes(maxID);
-
+ 
         // Files uploaded successfully to both folders
         console.log('Files received:', req.files);
         return res.status(200).json({ message: 'Files uploaded successfully to both LowRes and HighRes', files: req.files });
@@ -244,61 +245,29 @@ exports.imageUploadHandler = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
-// exports.insertArticle = async (req, res) => {
-//   const {
-//     product, layout, zone, storyto, pagename, Storyname, HeadKicker, Head, HeadDesk,
-//     Byline, Dateline, paragraph
-//   } = req.body;
-
-//   try {
-//     const xmlNameValue = await xml_name(); // Retrieve the unique ID
-//     const parent_object_id = xmlNameValue ;
-//     const query = `
-//       INSERT INTO news_details_new (
-//         xml_name, parent_object_id, Product, desk_type, Zone_Code, Created_user, Page_name, tagline, HeadKicker, Head, HeadDeck,
-//         byline, dateline, content
-//       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//     `;
-
-//     const values = [
-//       xmlNameValue, parent_object_id, product, layout, zone, storyto, pagename, Storyname, HeadKicker, Head, HeadDesk,
-//       Byline, Dateline, encodeToBase64(paragraph)
-//     ];
-
-//     console.log("values:", values);
-
-//     const [result] = await pool.execute(query, values);
-
-//     console.log('Insert result:', result);
-//     res.status(200).json({ message: 'Article inserted successfully' });
-//   } catch (error) {
-//     console.error('Error inserting article:', error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// };
-
-
-
+ 
+ 
+ 
+ 
+ 
+ 
 exports.getProducts = async (req, res) => {
   try {
     const [rows, fields] = await pool.query('SELECT * FROM mas_product WHERE status = "A" ');
     res.json(rows);
-
+ 
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
+ 
+ 
+ 
 exports.getLayouts = async (req, res) => {
   try {
     const { productName } = req.body;
-
+ 
     // Mapping of product names to product IDs
     const productIdMapping = {
       "Ananda Jothi": "TAMAnand",
@@ -319,21 +288,21 @@ exports.getLayouts = async (req, res) => {
       "Sontha Veedu": "TAMVeedu",
       "TAMIL VETRIKODI": "TAMVKIS"
     };
-
+ 
     // Retrieve the product ID based on the product name
     const productId = productIdMapping[productName];
-
+ 
     if (!productId) {
       return res.status(404).json({ error: 'Product not found' });
     }
-
+ 
     const query = `
       SELECT DISTINCT n.desk_name
       FROM desk_m n
       WHERE PRODUCT_ID = ? AND ACTIVE_STATUS = 'A'
       ORDER BY desk_name
     `;
-
+ 
     const [rows] = await pool.query(query, [productId]);
     res.json(rows);
   } catch (error) {
@@ -341,8 +310,8 @@ exports.getLayouts = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
+ 
+ 
 exports.getZone = async (req, res) => {
   try {
     const [rows, fields] = await pool.query(' SELECT m.Zone_Code, m.Zone_Name FROM mas_zone m where Zone_Code<>"ALL" ');
@@ -352,45 +321,45 @@ exports.getZone = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
-
-
+ 
+ 
+ 
+ 
+ 
 exports.assignUser = async (req, res) => {
   try {
     const { zoneName } = req.body;
     if (!zoneName) {
       return res.status(404).json({ error: 'User not found' });
     }
-
+ 
     const query = `SELECT u.User_name ,u.Group_Code
     FROM mas_user u
     JOIN mas_zone z ON u.Zone_Code = z.Zone_Code
     WHERE z.Zone_Name = ? And u.Status='A' `;
-
+ 
     const [rows] = await pool.query(query, [zoneName]);
     res.json(rows);
-
+ 
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
+ 
+ 
+ 
 exports.getPageNumber = async (req, res) => {
   try {
     const { deskName } = req.body;
     if (!deskName) {
       return res.status(400).json({ error: 'deskName is required' });
     }
-
-    const query = `SELECT d.page_id FROM desk_page_id_mas d 
-                   WHERE PAGE_ID <> '' AND desk LIKE ? 
+ 
+    const query = `SELECT d.page_id FROM desk_page_id_mas d
+                   WHERE PAGE_ID <> '' AND desk LIKE ?
                    ORDER BY page_id`;
-
+ 
     const [rows] = await pool.query(query, [`%${deskName}%`]);
     res.json(rows);
   } catch (error) {
@@ -398,21 +367,21 @@ exports.getPageNumber = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
+ 
+ 
+ 
 // Insert Article
 exports.insertArticle = async (req, res) => {
   const {
     product, layout, zone, storyto, pagename, Storyname, HeadKicker, Head, HeadDesk,
     Byline, Dateline, paragraph, filenames, path, finalCaption, xml_parent_action, Status,
-    ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,Assigned_USER,SP_Sub_Editor
+    ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,Assigned_USER,SP_Sub_Editor,Created_user
   } = req.body;
  
   console.log("Received insert values:", {
     product, layout, zone, storyto, pagename, Storyname, HeadKicker, Head, HeadDesk,
     Byline, Dateline, paragraph, filenames, path, finalCaption, xml_parent_action, Status,
-    ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,Assigned_USER,SP_Sub_Editor
+    ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,Assigned_USER,SP_Sub_Editor,Created_user
   });
  
   try {
@@ -428,7 +397,7 @@ exports.insertArticle = async (req, res) => {
  
     console.log("Image Filename :",filenames);
     const ImageCaptionvalue = await ImageCaption(filenames, finalCaption, parentid);
-    console.log("Final Image formation tag:",ImageCaptionvalue);
+    // console.log("Final Image formation tag:",ImageCaptionvalue);
  
     // if (!productId || !zoneCode || !userId) {
     //   return res.status(400).json({ error: 'Invalid product, zone, or user' });
@@ -462,17 +431,17 @@ exports.insertArticle = async (req, res) => {
         Chief_Report_User, Editorial_User, Report_User,Assigned_USER
       ) VALUES (
         '${xmlNameValue}', SYSDATE(), SYSDATE(), '${parentid}', '${productId}', '${layout}', '${zoneCode}',
-        '${ArticleCreatedUser}', '${pagename}', '${Storyname}', '${encodeToBase64(HeadKicker)}', '${encodeToBase64(Head)}','${encodeToBase64(HeadDesk)}', '${encodeToBase64(Byline)}', '${encodeToBase64(Dateline)}', '${encodeToBase64(paragraph)}',
+        '${Created_user}', '${pagename}', '${Storyname}', '${encodeToBase64(HeadKicker)}', '${encodeToBase64(Head)}','${encodeToBase64(HeadDesk)}', '${encodeToBase64(Byline)}', '${encodeToBase64(Dateline)}', '${encodeToBase64(paragraph)}',
         'RE', 'TheHindu', '${xml_parent_action}', 'N', 'N', 'Y', 'Y', '${Status}',
         DATE_ADD(CURDATE(), INTERVAL 1 DAY),DATE_ADD(CURDATE(), INTERVAL 1 DAY),
         '${filenames}', '${path}', '${encodeToBase64(finalCaption)}', '${filenames}', '${TotalXml}',
-        '${ArticleCreatedUser}', '${ArticleCreatedUser}', 'RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~',
+        '${zone}', '${ArticleCreatedUser}', 'RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~RGB~RGBRGB~RGB~',
         '${Chief_Report_User}', '${Editorial_User}', '${Report_User}','${Assigned_USER}'
       )
     `;
  
     // Log the query with values interpolated
-    console.log("Query with interpolated values:", query);
+    // console.log("Query with interpolated values:", query);
  
     const [result] = await pool.execute(query);
     console.log('Insert result:', result);
@@ -483,121 +452,120 @@ exports.insertArticle = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
+ 
+ 
+ 
 exports.updateArticle = async (req,res) => {
   const {
     xml_name, layout, zone, storyto, pagename, Ref_story_name, HeadKicker, Head, HeadDesk,
     Byline, Dateline, paragraph, filenames, path, caption, xml_parent_action, Status,
     ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,product,IssueDate,finalCaption,
-    SP_Editor,Assigned_USER,SP_Sub_Editor
+    SP_Editor,Assigned_USER,SP_Sub_Editor,approved_datetime
   } = req.body;
-
+ 
   console.log("Received update values:", {
     product, layout, zone, storyto, pagename, Ref_story_name, HeadKicker, Head, HeadDesk,
     Byline, Dateline, paragraph, filenames, path, caption, xml_parent_action, Status,
     ArticleCreatedUser, Chief_Report_User, Editorial_User, Report_User,IssueDate,finalCaption,
-    SP_Editor,Assigned_USER,SP_Sub_Editor
+    SP_Editor,Assigned_USER,SP_Sub_Editor,approved_datetime
   });
-
+ 
   try {
-
+ 
     const productId = product;    
     const zoneCode = await Zone_Code(zone);
     const userId = await User_Id(storyto);
-
+ 
    const finalCaptionString = Array.isArray(finalCaption) ? finalCaption.join(' ') : finalCaption;
-   console.log("finalCaptionString",finalCaptionString);
-
+  //  console.log("finalCaptionString",finalCaptionString);
+ 
    const updateCaption = (finalCaptionString && finalCaptionString.trim() !== "") ? finalCaptionString : caption;
-
+ 
     const ImageCaptionvalue = await ImageCaption(filenames, updateCaption, xml_name);
-
-
+    // console.log("Final Image formation tag :",ImageCaptionvalue);
+ 
+ 
     let TotalXml = "";
-
+ 
     const addXmlTag = (tag, value) => {
       TotalXml += `<${tag}><span>${value ? value.trim() : ""}</span></${tag}>`;
     };
-
+ 
     addXmlTag("head_kicker", HeadKicker);
     addXmlTag("head", Head);
     addXmlTag("head_deck", HeadDesk);
     addXmlTag("byline", Byline);
     addXmlTag("Dateline", Dateline);
     addXmlTag("body", paragraph);
-
+ 
     TotalXml += ImageCaptionvalue;
-
+ 
     console.log("TotalXml :",TotalXml);
     TotalXml = encodeToBase64(TotalXml);
-
-
-// Interpolate values into the query string for debugging
+ 
+ 
 const query = `
-  UPDATE news_details_new 
-  SET 
-    Product = '${productId}', 
-    desk_type = '${layout}', 
-    Zone_Code = '${zoneCode}', 
-    Created_user = '${ArticleCreatedUser}', 
-    Page_name = '${pagename}', 
-    Ref_story_name = '${Ref_story_name}', 
-    HeadKicker = '${encodeToBase64(HeadKicker)}', 
+  UPDATE news_details_new
+  SET
+    Product = '${productId}',
+    desk_type = '${layout}',
+    Zone_Code = '${zoneCode}',
+    Page_name = '${pagename}',
+    Ref_story_name = '${Ref_story_name}',
+    HeadKicker = '${encodeToBase64(HeadKicker)}',
     Head = '${encodeToBase64(Head)}',
-    HeadDeck = '${encodeToBase64(HeadDesk)}', 
-    byline = '${encodeToBase64(Byline)}', 
-    dateline = '${encodeToBase64(Dateline)}', 
+    HeadDeck = '${encodeToBase64(HeadDesk)}',
+    byline = '${encodeToBase64(Byline)}',
+    dateline = '${encodeToBase64(Dateline)}',
     content = '${encodeToBase64(paragraph)}',  
-    xml_parent_action = '${xml_parent_action}', 
-    Status = '${Status}', 
-    caption = '${encodeToBase64(updateCaption)}', 
-    Total_Xml = '${TotalXml}', 
-    Articles_Created = '${ArticleCreatedUser}', 
-    ArticleCreatedUser = '${ArticleCreatedUser}', 
-    Chief_Report_User = '${Chief_Report_User}', 
-    Editorial_User = '${Editorial_User}', 
+    xml_parent_action = '${xml_parent_action}',
+    Status = '${Status}',
+    caption = '${encodeToBase64(updateCaption)}',
+    Total_Xml = '${TotalXml}',
+    Articles_Created = '${zone}',
+    ArticleCreatedUser = '${ArticleCreatedUser}',
+    Chief_Report_User = '${Chief_Report_User}',
+    Editorial_User = '${Editorial_User}',
     Report_User = '${Report_User}',
     SP_Editor ='${SP_Editor}',
     Assigned_USER='${Assigned_USER}',
-    SP_Sub_Editor='${SP_Sub_Editor}'
-    
-    WHERE 
+    SP_Sub_Editor='${SP_Sub_Editor}',
+    approved_datetime= SYSDATE()
+    WHERE
     IssueDate = '${IssueDate}' And xml_name = '${xml_name}'
 `;
-
-    // Log the query with values interpolated
-    console.log("Query with interpolated values:", query);
-
+ 
+    // console.log("Query with interpolated values:", query);
+ 
     const [result] = await pool.execute(query);
     console.log('update result:', result);
-
+ 
     res.status(200).json({ message: 'Article updated successfully' });
   } catch (error) {
     console.error('Error inserting article news:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
-
-
-
+ 
+ 
+ 
+ 
 exports.getNewsById = async (req, res) => {
   const { newsid, issuedate } = req.body;
   console.log(newsid);
-
+ 
   try {
     // Fetch only necessary columns and add pagination
     const query = `SELECT * FROM news_details_new WHERE parent_object_id = ? AND IssueDate = ?`;
     const [rows] = await pool.query(query, [newsid, issuedate]);
-
+ 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'News not found' });
     }
-
+ 
     // List of fields that need to be decoded
     const fieldsToDecode = ['Total_Xml', 'HeadKicker', 'Head', 'HeadDeck', 'byline', 'dateline', 'content', 'caption'];
-
+ 
     // Decode specified Base64 encoded fields in each row
     const decodedRows = rows.map(row => {
       const decodedRow = { ...row }; // Copy original row
@@ -608,42 +576,42 @@ exports.getNewsById = async (req, res) => {
       });
       return decodedRow;
     });
-
+ 
     res.json(decodedRows);
   } catch (error) {
     console.error('Error fetching news:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
+ 
+ 
+ 
 exports.getImageName = async (req, res) => {
   try {
     const folderName = await getMaxID();
     console.log('Folder Name:', folderName);
     const input_folder = path.join(`\\\\192.168.90.32\\Images\\${folderName}\\LowRes`);
     const folder_path = `Images//${folderName}//LowRes/`;
-
+ 
     // Check if the directory exists
     if (!fs.existsSync(input_folder)) {
       return res.status(200).json({ message: 'Folder does not exist', filenames: '', path: folder_path });
     }
-
+ 
     // Read the files in the folder
     fs.readdir(input_folder, (err, files) => {
       if (err) {
         console.error('Error reading folder:', err);
         return res.status(500).json({ error: 'Error reading folder' });
       }
-
+ 
       if (files.length === 0) {
         return res.status(200).json({ message: 'Images not exist', filenames: '', path: folder_path });
       }
-
+ 
       // Combine filenames using ~ if there's more than one file
       let fileres = files.length > 1 ? files.join("~") : files[0] || "";
-
+ 
       // Send the list of filenames in the folder
       console.log('Filenames:', fileres);
       return res.status(200).json({ filenames: fileres, path: folder_path });
@@ -653,9 +621,9 @@ exports.getImageName = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
+ 
+ 
+ 
 exports.fetchnews = async (req, res) => {
   const { selectedDate, product, zone, layout, pagename } = req.body;
  
@@ -695,29 +663,30 @@ const [rows] = await pool.query(query, [selectedDate, product, `%${zonecode}%`, 
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
+ 
+ 
+ 
 exports.fetchrevokepage = async (req, res) => {
   const { issueDate, zoneId, productId } = req.body;
   console.log();
   try {
-
+ 
     if (!issueDate || !productId || !zoneId) {
       return res.status(400).json({ error: 'Date, Product ID, and Zone ID are required' });
     }
-
+ 
     const query = `SELECT * FROM page_compose where Issue_Dt = ? and Zone_id = ? and  Product_id = ?`;
     const [rows] = await pool.query(query, [issueDate, zoneId, productId]);
     res.json(rows);
     console.log(rows);
-
+ 
   } catch (error) {
     console.log(error);
   }
 }
-
-
-
+ 
+ 
+ 
 exports.userdetail = async (req, res) => {
   const { User_Id } = req.body;
   console.log(User_Id);
@@ -725,51 +694,51 @@ exports.userdetail = async (req, res) => {
     if (!User_Id) {
       return res.status(400).json({ error: 'User_Id is not found' });
     }
-
+ 
     const query = `SELECT * FROM mas_user WHERE User_id = ?`;
     const [rows, fields] = await pool.query(query, [User_Id]); // Use await here to wait for the query to complete
-
+ 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
-
+ 
     res.json(rows[0]); // Assuming you expect only one row, returning the first row
   } catch (error) {
     console.error('Error in userdetail:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
+ 
+ 
+ 
 exports.adAuth = async (req,res) =>{
   try {
     // Access the request body
     const formData = req.body;
     const formDataJSON = JSON.stringify(formData);
     console.log(formData);
-
+ 
     if (formData !== null) {
       const redirectURL = `http://192.168.90.139:3000/user?formData=${encodeURIComponent(formDataJSON)}`;
       return res.redirect(redirectURL);
     }
    
     console.log(formDataJSON);
-
+ 
     res.json({ message: 'Form data received successfully', formData: formDataJSON });
   } catch (error) {
     console.error('Error handling POST request:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
-
-
-
-
-
-
+ 
+ 
+ 
+ 
+ 
+ 
 //-------------Thumbnail api's ----------------------
-
+ 
 exports.productids = async (req, res) => {
   const issueDate = req.query.date;
  
@@ -790,6 +759,7 @@ exports.productids = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+ 
  
 exports.zoneIdsByProduct = async (req, res) => {
   const issueDate = req.query.date;
@@ -815,6 +785,8 @@ exports.zoneIdsByProduct = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+ 
+ 
  
 exports.editionId = async (req, res) => {
   const issueDate = req.query.date;
@@ -846,7 +818,7 @@ exports.pagesZones = async (req, res) => {
   const productId = req.query.productId;
   const zoneId = req.query.zoneId;
  
-  console.log("Received request with date:", issueDate, "productId:", productId, "zoneId:", zoneId);
+  // console.log("Received request with date:", issueDate, "productId:", productId, "zoneId:", zoneId);
  
   if (!issueDate || !productId || !zoneId) {
     return res
@@ -902,27 +874,27 @@ exports.pagesWithoutZones = async (req, res) => {
  
 exports.getImages = async (req, res) => {
   const { date, zone, product, page, edition } = req.query;
-
+ 
   console.log("Received request with date:", date, ", zone:", zone, ", product:", product, ", page:", page, ", and edition:", edition);
-
+ 
   // Check if all required parameters are present
   if (!date || !zone || !product || !page || !edition) {
     return res.status(400).json({ error: "Date, Zone, Product, Page, and Edition are required" });
   }
-
+ 
   // Construct the file path
   const filePath = path.join("\\\\192.168.90.32\\EditorialImage\\Image_Preview", date, zone, `${product}_${date}_${zone}_${edition}_${page}.jpg`);
-
+ 
   try {
     // Check if the file exists
     await fs.promises.access(filePath, fs.constants.F_OK);
     // Get file statistics
     const stats = await fs.promises.stat(filePath);
     const modifiedDate = stats.mtime; // Modified date of the file
-
+ 
     // Convert modifiedDate to local time zone string
     const localDateString = modifiedDate.toLocaleString();
-
+ 
     // Send the file with appropriate headers, including the modified date
     res.sendFile(filePath, {
       headers: {
@@ -940,7 +912,7 @@ exports.getImages = async (req, res) => {
     }
   }
 };
-
+ 
 exports.getPdf = async (req, res) => {
   const { date, zone, product, page, edition } = req.query;
  
@@ -991,11 +963,11 @@ exports.getPlanData = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+ 
 //---------------------------Article user api
-
+ 
 exports.articleuserids = async (req, res) => {
-  
+ 
   const query = `
     SELECT User_ID, User_name FROM mas_user m;
   `;
@@ -1007,12 +979,12 @@ exports.articleuserids = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-
-
+ 
+ 
+ 
 //-------------Revoke Api ---------------
-
-
+ 
+ 
 // Get Plan ID
 async function getPlanId(issueDate, productId, zoneId) {
   try {
@@ -1035,7 +1007,7 @@ async function getPlanId(issueDate, productId, zoneId) {
     throw new Error('Failed to retrieve Plan_Id');
   }
 }
-
+ 
 exports.fetchrevokepage = async (req, res) =>{
   const {issueDate,zoneId,productId} = req.body ;
   console.log(issueDate,zoneId,productId);
@@ -1054,7 +1026,7 @@ try {
   console.log(error);
 }
 }
-  
+ 
  
 exports.updatePageCompose = async (req, res) => {
   const { issueDate, zoneId, productId, pageName, newStatus, newNoOfRevokes } = req.body;

@@ -269,7 +269,7 @@ export default function ArticleView() {
     if (selectedUser) {
       // Filter news to show only articles assigned to selectedUser in any of the specified fields
       const filteredArticles = news.filter(
-        (article) =>
+        (article) => 
           article.Created_user === selectedUser ||
           article.Report_User === selectedUser ||
           article.Chief_Report_User === selectedUser ||
@@ -284,6 +284,7 @@ export default function ArticleView() {
       setFilteredNews(news);
     }
   };
+  
 
   const handleShowAssignedOnlyChange = (e) => {
     const checked = e.target.checked;
@@ -409,31 +410,24 @@ export default function ArticleView() {
   return (
     <div className="main-content">
       <div>
-        <fieldset className="f_fieldset">
-          <legend>Select Details</legend>
-          <Row
-            className="mb-3"
-            style={{
-              justifyContent: "space-evenly"
-            }}
-          >
-            <Col xs={12} sm={6} md={2} className="mb-3">
+        <fieldset className="fieldset">
+          <legend>Stories List</legend>
+          <Row className="mb-3">
+            <Col sm={3} className="mb-3">
               <Form.Group>
                 <Form.Control
                   type="date"
                   value={formData.selectedDate}
                   onChange={handleDateChange}
-                  className="form-select-sm custom-select"
                 />
               </Form.Group>
             </Col>
 
-            <Col xs={12} sm={6} md={2} className="mb-3">
+            <Col sm={3} className="mb-3">
               <Form.Select
                 aria-label="Product select example"
                 onChange={handleProductChange}
                 value={formData.product}
-                className="form-select-sm custom-select"
               >
                 <option>Select Product</option>
                 {products.map((productName, index) => (
@@ -443,12 +437,11 @@ export default function ArticleView() {
                 ))}
               </Form.Select>
             </Col>
-            <Col xs={12} sm={6} md={2} className="mb-3">
+            <Col sm={3} className="mb-3">
               <Form.Select
                 aria-label="Zone select example"
                 onChange={handleZoneChange}
                 value={formData.zone}
-                className="form-select-sm custom-select"
               >
                 <option value="">Zone</option>
                 {zones.map((zoneName, index) => (
@@ -459,12 +452,11 @@ export default function ArticleView() {
               </Form.Select>
             </Col>
 
-            <Col xs={12} sm={6} md={2} className="mb-3">
+            <Col sm={3} className="mb-3">
               <Form.Select
                 aria-label="Layout desk select example"
                 onChange={handleLayoutChange}
                 value={formData.layout}
-                className="form-select-sm custom-select"
               >
                 <option>No Layout selected</option>
                 {layouts.map((layout, index) => (
@@ -474,44 +466,14 @@ export default function ArticleView() {
                 ))}
               </Form.Select>
             </Col>
-
-            <Col xs={12} sm={6} md={2} className="mb-3">
-              <Button
-                onClick={handleSubmit}
-                style={{ backgroundColor: "#015BAB" }}
-              >
-                View
-              </Button>
-            </Col>
           </Row>
 
-          <Row
-            className="mb-3"
-            style={{
-              justifyContent: "flex-start",
-              display: "flex",
-              alignItems: "center",
-              marginLeft:'5%'
-            }}
-          >
-            <Col xs={12} sm={6} md={2} className="mb-3">
-              <div
-                style={{
-                  fontSize: "larger",
-                  fontWeight: "bold",
-                  color: "#015BAB",
-                  width:''
-                }}
-              >
-                Advanced Filter
-              </div>
-            </Col>
-            <Col xs={12} sm={6} md={2} className="mb-3">
+          <Row className="mb-3">
+            <Col sm={3} className="mb-3">
               <Form.Select
                 aria-label="Status select example"
                 onChange={handleStatusChange}
                 value={formData.status}
-                className="form-select-sm custom-select"
               >
                 <option value="">Select Status</option>
                 {statuses.map((status, index) => (
@@ -522,11 +484,10 @@ export default function ArticleView() {
               </Form.Select>
             </Col>
 
-            <Col xs={12} sm={6} md={2} className="mb-3">
+            <Col sm={3} className="mb-3">
               <Form.Select
                 aria-label="User select example"
                 onChange={handleUserChange}
-                className="form-select-sm custom-select"
               >
                 <option value="">Select User</option>
                 {usersData.map((user, index) => (
@@ -537,21 +498,25 @@ export default function ArticleView() {
               </Form.Select>
             </Col>
 
-            <Col xs={12} sm={6} md={2} className="mb-3">
+            <Col>
               <Form.Group controlId="formShowAssignedOnly">
                 <Form.Check
                   type="checkbox"
                   label="Show Assigned Only"
                   checked={showAssignedOnly}
                   onChange={handleShowAssignedOnlyChange}
-                  style={{ width: "80%" }}
                 />
               </Form.Group>
             </Col>
+
+            
           </Row>
+          <Button onClick={handleSubmit} style={{ backgroundColor: "#015BAB" }}>
+            View
+          </Button>
         </fieldset>
 
-        <fieldset className="f_fieldset">
+        <fieldset className="fieldset">
           <legend>Stories Details</legend>
 
           <div className="S-heading">Total Stories: {newsLength}</div>
@@ -571,24 +536,10 @@ export default function ArticleView() {
                   <th>SP Editor</th>
                   <th>Page</th>
                   <th>Status</th>
-                  <th>Action</th>
+                  <th className="ST-heading">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {/* <tr className="s_head">
-                <th></th>
-                <th></th>
-                <th></th>
-                <th>Submited</th>
-                <th>Approved</th>
-                <th></th>
-                <th>PR Done</th>
-                <th></th>
-                <th>Finalize</th>
-                <th></th>
-                <th></th>
-                <th></th>
-          </tr> */}
                 {filteredNews.length > 0 ? (
                   filteredNews.map((article, index) => (
                     <tr key={index}>
@@ -603,36 +554,46 @@ export default function ArticleView() {
                       <td>{getUserName(article.SP_Editor)}</td>
                       <td>{article.Page_name}</td>
                       <td>{getStatusStage(article.Status)}</td>
-                      <td className="action-buttons">
-                        <Button
-                          className="action-btn"
-                          variant="primary"
-                          size="sm"
-                          onClick={() =>
-                            articleView(
-                              article.parent_object_id,
-                              article.IssueDate,
-                              "view"
-                            )
-                          }
-                        >
-                          View
-                        </Button>
-                        {canEdit(userRole, article.Status) && (
-                          <Button
-                            className="action-btn"
-                            variant="warning"
-                            size="sm"
-                            onClick={() =>
-                              articleView(
-                                article.parent_object_id,
-                                article.IssueDate
-                              )
-                            }
-                          >
-                            Edit
-                          </Button>
-                        )}
+                      <td>
+                        <Row className="mb-3">
+                          <Col md={6}>
+                            <Button
+                              // variant="primary"
+
+                              className="btn-edit"
+                              size="sm"
+                              onClick={() =>
+                                articleView(
+                                  article.parent_object_id,
+                                  article.IssueDate,
+                                  "view"
+                                )
+                              }
+                            >
+                              View
+                            </Button>{" "}
+                          </Col>
+
+                          <Col md={6}>
+                            {canEdit(userRole, article.Status) && (
+                              <Button
+                                // variant="warning"
+                                className="btn-edit"
+                                size="sm"
+                                onClick={() =>
+                                  articleView(
+                                    article.parent_object_id,
+                                    article.IssueDate
+                                  )
+                                }
+                              >
+                                Edit
+                              </Button>
+                            )}{" "}
+                          </Col>
+                        </Row>
+
+                        {/* <Button variant="danger" size="sm">Delete</Button> */}
                       </td>
                     </tr>
                   ))

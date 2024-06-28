@@ -1,4 +1,4 @@
-sidebar css ----------------------------------------------- body {
+body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
@@ -38,11 +38,9 @@ sidebar css ----------------------------------------------- body {
   .sidebar {
     transform: translateX(0);
   }
-
   .btn-close {
     display: none;
   }
-
   .btn-toggle {
     display: none;
   }
@@ -66,7 +64,7 @@ sidebar css ----------------------------------------------- body {
 }
 
 .sidebar-body {
-  padding: 1.2rem;
+  padding: 1rem;
   flex-grow: 1;
   overflow-y: auto;
 }
@@ -79,24 +77,24 @@ sidebar css ----------------------------------------------- body {
 
 .nav-link {
   color: white;
-  padding: 0.80rem 1.5rem;
+  padding: 0.75rem 1rem;
   text-decoration: none;
   display: flex;
   align-items: center;
   flex-direction: row;
   justify-content: flex-start;
-  margin-top: 10px;
+
 }
 
 .nav-link.active {
   background: white;
-  border-radius: 10px;
+  border-radius: 0.25rem;
   color: #015BAB;
 }
 
 .nav-link:hover {
   background: white;
-  border-radius: 10px;
+  border-radius: 0.25rem;
 }
 
 .overlay {
@@ -118,24 +116,29 @@ sidebar css ----------------------------------------------- body {
 }
 
 .main-content {
-  margin-left: 250px;
+  margin-left: 250px; /* Adjust this value to the width of your sidebar */
   padding: 1rem;
 }
 
-.icon-style {
+.icon-style{
   margin-left: 10px;
   font-weight: bold;
   font-size: 18px;
 }
 
 
-.btn-logout {
+.btn-logout{
   width: 50%;
-  margin-left: 25%;
-  margin-top: 10%;
-  font-size: 18px;
-  font-weight: bold;
-  background-color: cornflowerblue;
+    margin-left: 25%;
+    margin-top: 10%;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: cornflowerblue;
+}
+
+.nav flex-column{
+  display: flex;
+
 }
 
 @media (max-width: 768px) {

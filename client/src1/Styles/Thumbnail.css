@@ -1,78 +1,76 @@
-PagePreview Css
--------------------------------------------
 /* CSS Reset */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
- 
+
 /* Root styles */
 html,
 body {
   height: 100%;
 }
- 
+
 body {
   font-family: Arial, sans-serif;
   background-color: #d9ecf8;
 }
- 
+
 .t-container {
   max-width: 100%;
   margin: 0 auto;
   padding: 20px;
   background-color: #d9ecf8;
 }
- 
+
 h1 {
-  font-size: 25px;
+  font-size: 32px;
   color: #ffffff;
   margin-bottom: 20px;
-  background-color: cornflowerblue;
+  background-color: #015BAB;
   font-weight: bold;
   padding: 15px;
   width:fit-content;
   border: solid none;
   border-radius: 15px;
 }
- 
+
 .t-input-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   grid-gap: 10px;
 }
- 
+
 .t-form-group {
   margin-bottom: 10px;
 }
- 
+
 .t-form-group1 {
   align-items: center;
   display: flex;
   align-content: center;
   justify-content: center;
 }
- 
+
 label {
   display: block;
   font-weight: bold;
 }
- 
+
 select {
   width: 80%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
- 
+
 .t-date-input {
   width: 80%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
- 
+
 .t-list_button {
   width: 80%;
   padding: 8px;
@@ -83,33 +81,33 @@ select {
   font-size: 14px;
   font-weight: bold;
 }
- 
+
 .t-last-refresh {
   margin-top: 20px;
   font-size: 14px;
   font-weight: bold;
 }
- 
+
 .t-refresh-time {
   font-weight: bold;
   font-size: 14px;
 }
- 
+
 .t-output-container {
   margin-top: 20px;
 }
- 
+
 .t-thumbnails-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr); /* Display 5 images in a row */
   grid-gap: 20px;
 }
- 
+
 .t-thumbnail {
   position: relative;
   cursor: pointer;
 }
- 
+
 .t-thumbnail img {
   width: 100%;
   height: auto;
@@ -117,8 +115,8 @@ select {
   max-width: fit-content;
   border: solid 1px #015BAB;
 }
- 
- 
+
+
 .t-thumbnail-caption {
   position: absolute;
   bottom: 0;
@@ -133,11 +131,11 @@ select {
   font-size: 14px;
   font-weight: bold;
 }
- 
+
 .t-thumbnail-caption span {
   margin-right: 1px; /* Adjust the value as needed */
 }
- 
+
 /* Media Queries for responsiveness */
 @media only screen and (max-width: 768px) {
   .t-input-container {

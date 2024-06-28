@@ -1,0 +1,78 @@
+/* ArticleEditor.css */
+
+/* Fieldset styling */
+.fieldset {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Background color */
+  }
+  
+  .fieldset legend {
+    padding: 0;
+    font-weight: bold;
+    color: #015BAB; /* Font color */
+  }
+  
+  /* Form control styling */
+  .form-control {
+    border-color: #ddd;
+  }
+
+  .S-heading {
+    color: #015BAB;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  /* Floating label styling */
+  .floating-label {
+    color: #015BAB; /* Font color */
+  }
+  
+  /* Textarea styling */
+  textarea.form-control {
+    resize: none; /* Prevent textarea resize */
+  }
+
+  .table-responsive table thead tr th{
+    text-align: center;
+    background-color: #015BAB;
+    font-weight: bold;
+    color: white;
+    width: 50px;
+}
+
+.table-responsive table thead tr th .ST-heading{
+  width:fit-content;
+}
+
+.table-responsive table tbody tr td .ST-content{
+  width:fit-content;
+  
+}
+/* .mb-3{
+  width: max-content;
+  justify-items: center;
+} */
+
+.btn-edit{
+  font-size: 16px;
+  font-weight: bold;
+
+}
+  /* Animation for word count */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  .word-count {
+    animation: fadeIn 0.5s ease-out; /* Animation */
+  }
+  
