@@ -40,6 +40,7 @@ router.get('/reporter/plandata', Controller.getPlanData);
 //------------------Article User----------
 
 router.get('/article/articleuserids', Controller.articleuserids);
+router.get('/article/userfilterdetail', Controller.userfilterdetail);
 
 
 

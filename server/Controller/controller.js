@@ -1008,6 +1008,31 @@ exports.articleuserids = async (req, res) => {
   }
 };
 
+exports.userfilterdetail = async (req, res) => {
+  const { zonecode } = req.query;
+  console.log(`Received zonecode: ${zonecode}`);
+
+  try {
+    if (!zonecode) {
+      return res.status(400).json({ error: 'zonecode is required' });
+    }
+
+    const query = `SELECT * FROM mas_user WHERE depat_name = 'News Desk' AND zone_code = ?`;
+    const [rows] = await pool.query(query, [zonecode]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'No users found for the provided zone code' });
+    }
+
+    res.json(rows); // Return all rows that match the query
+  } catch (error) {
+    console.error('Error in userfilterdetail:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
 
 
 //-------------Revoke Api ---------------

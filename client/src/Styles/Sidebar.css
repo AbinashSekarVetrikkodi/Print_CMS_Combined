@@ -94,7 +94,7 @@ sidebar css ----------------------------------------------- body {
   color: #015BAB;
 }
 
-.nav-link:hover {
+.nav-link:hover { 
   background: white;
   border-radius: 10px;
 }

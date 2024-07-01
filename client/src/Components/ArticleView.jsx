@@ -113,6 +113,7 @@ export default function ArticleView() {
 
     fetchUsersData();
   }, []);
+  
 
   useEffect(() => {
     const fetchAssignValue = async () => {
@@ -213,6 +214,7 @@ export default function ArticleView() {
         { zoneName: selectedZone }
       );
       setAssignUsers(response.data.map((user) => user.User_name));
+      console.log("response user",response.data)
     } catch (error) {
       console.error(error);
     }
@@ -491,27 +493,30 @@ export default function ArticleView() {
               justifyContent: "flex-start",
               display: "flex",
               alignItems: "center",
-              marginLeft:'5%'
+              marginLeft:'2%'
             }}
           >
-            <Col xs={12} sm={6} md={2} className="mb-3">
+            <Col xs={12} sm={6} md={2} className="mb-3" style={{ width:'max-content',}}>
               <div
                 style={{
                   fontSize: "larger",
                   fontWeight: "bold",
                   color: "#015BAB",
-                  width:''
+                  width:'max-content',
+                  fontStyle: 'italic',
+                  fontSize:'1rem',
                 }}
               >
-                Advanced Filter
+                Advanced Filter :
               </div>
             </Col>
-            <Col xs={12} sm={6} md={2} className="mb-3">
+            <Col xs={12} sm={6} md={2} className="mb-3" > 
               <Form.Select
                 aria-label="Status select example"
                 onChange={handleStatusChange}
                 value={formData.status}
                 className="form-select-sm custom-select"
+                style={{fontStyle:'italic',fontSize:'1rem'}}
               >
                 <option value="">Select Status</option>
                 {statuses.map((status, index) => (
@@ -527,6 +532,7 @@ export default function ArticleView() {
                 aria-label="User select example"
                 onChange={handleUserChange}
                 className="form-select-sm custom-select"
+                style={{fontStyle:'italic',fontSize:'1rem'}}
               >
                 <option value="">Select User</option>
                 {usersData.map((user, index) => (
@@ -544,7 +550,8 @@ export default function ArticleView() {
                   label="Show Assigned Only"
                   checked={showAssignedOnly}
                   onChange={handleShowAssignedOnlyChange}
-                  style={{ width: "80%" }}
+                  style={{ width: "100%",fontStyle: 'italic',
+                    fontSize:'1rem', }}
                 />
               </Form.Group>
             </Col>
