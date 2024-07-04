@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
 import { Button, Container } from 'react-bootstrap';
-import LoginImage from '../Assest/Login.webp'
-import "../Styles/Login.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -23,19 +21,11 @@ const HomePage = () => {
   };
 
   return (
-
-    <>
-      <div className="login-page">
-        <img src={LoginImage} alt="Login"></img>
-        <div className="button">
-          <button className="button button2" onClick={adAuth}>LOGIN</button>
-        </div>
-      </div>
-
-    </>
-
-
-
+    <Container className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+      <Button variant="primary" onClick={adAuth}>
+        Login
+      </Button>
+    </Container>
   );
 };
 

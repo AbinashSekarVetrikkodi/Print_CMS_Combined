@@ -6,8 +6,6 @@ import '../Styles/ArticleEditor.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import Lottie from "lottie-react";
-import Loading from '../Assest/Loading.json'
 
 
 
@@ -16,34 +14,6 @@ export default function ArticleNew() {
   const navigate = useNavigate();
 
   const emp_code = sessionStorage.getItem('emp_id')
-  const emp_id = sessionStorage.getItem("emp_id");
-  const emp_name = sessionStorage.getItem("emp_name");
-
-  useEffect(() => {
-    if (emp_id) {
-      getDetail();
-    } else {
-      navigate("/");
-    }
-  }, [emp_id, navigate]);
-
-
-  const getDetail = async () => {
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_IPCONFIG}api/getUser`,
-        { User_Id: emp_id }
-      );
-      const user = response.data;
-
-      if (user.GROUP_CODE) {
-        sessionStorage.setItem("userRole", user.GROUP_CODE);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  
   const storedZone = sessionStorage.getItem("selectedZone") || "";
   const storedLayout = sessionStorage.getItem("selectedLayout") || "";
   const storedPagename = sessionStorage.getItem("storedPagename") || "";
@@ -86,13 +56,6 @@ export default function ArticleNew() {
     Report_User: '',
     Assigned_USER: '',
     Created_user: '',
-    Created_user_time:'',
-    Report_User_time:'',
-    Chief_Report_User_time:'',
-    Editorial_User_time:'',
-    SP_Editor_time:'',
-    Sub_Editor_time:'',
-    SP_Sub_Editor_time:'',
   });
 
   console.log("formData values :", formData);
@@ -104,31 +67,6 @@ export default function ArticleNew() {
   const [pageNames, setPageNames] = useState([]);
   const [files, setFiles] = useState([]);
   const [captions, setCaptions] = useState([]);
-
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-
-  const [loading, setLoading] = useState(false);
-
-  const CustomAlert = ({ message, onClose }) => {
-    return (
-      <div className="message-box-overlay">
-        <div className="message-box">
-          <p>{message}</p>
-          <button onClick={onClose} className="btn btn-primary">OK</button>
-        </div>
-      </div>
-    );
-  };
-
-
-  const closeAlert = () => {
-    setShowAlert(false);
-    navigate('/article-view');
-  };
-
-
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -271,9 +209,9 @@ export default function ArticleNew() {
 
 
   const validateForm = () => {
-    const { product, zone, layout, pagename, Head, paragraph, Assigned_USER } = formData;
+    const { product, zone, layout, pagename, Head, paragraph,Assigned_USER } = formData;
     const emptyFields = [];
-
+  
     if (!product) {
       emptyFields.push("Product");
     }
@@ -295,12 +233,12 @@ export default function ArticleNew() {
     if (!paragraph) {
       emptyFields.push("Paragraph");
     }
-
+  
     if (emptyFields.length > 0) {
       alert(`Please fill in all mandatory fields: ${emptyFields.join(', ')}.`);
       return false;
     }
-
+  
     return true;
   };
 
@@ -308,8 +246,6 @@ export default function ArticleNew() {
   //-------update Article and images-----
 
   const uploadImagesAndInsertArticle = useCallback(async (updatedFormData) => {
-
-    setLoading(true);
 
     if (files.length > 0) {
       const imageFormData = new FormData();
@@ -326,8 +262,6 @@ export default function ArticleNew() {
         console.log('Files uploaded successfully', response.data);
       } catch (error) {
         console.error('Error uploading files', error);
-        setLoading(false); // Set loading state to false in case of error
-        return;
       }
     }
 
@@ -338,8 +272,6 @@ export default function ArticleNew() {
       console.log("imagename:", imageNames);
     } catch (error) {
       console.error('Error fetching image names', error);
-      setLoading(false); // Set loading state to false in case of error
-      return;
     }
 
     // Extract filenames and path from imageNames
@@ -368,14 +300,11 @@ export default function ArticleNew() {
     try {
       const response = await axios.post(`${process.env.REACT_APP_IPCONFIG}api/insertArticle`, articleData);
       console.log('Article inserted successfully', response.data);
+      alert("Article added successfully!");
+      navigate('/article-view');
     } catch (error) {
       console.error('Error inserting article', error);
-    } finally {
-      setLoading(false);
-      setAlertMessage('Article added successfully!');
-      setShowAlert(true);
     }
-
   }, [files, captions]);
 
   const handleSave = () => {
@@ -476,7 +405,7 @@ export default function ArticleNew() {
   }
 
   const handleFinalize = () => {
-    formData.Assigned_USER = 'None';
+    formData.Assigned_USER='None';
     if (validateForm()) {
       const updatedFormData = {
         ...formData,
@@ -521,7 +450,7 @@ export default function ArticleNew() {
               </Button>
             </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleClose}>
+              <Button  className={buttonClasses} onClick={handleClose}>
                 Close
               </Button>
             </Col>
@@ -537,17 +466,12 @@ export default function ArticleNew() {
               </Button>
             </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button variant="success" className={buttonClasses} onClick={handleSubmit}>
-                Submit
-              </Button>
-            </Col>
-            <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleApprove}>
+              <Button  className={buttonClasses} onClick={handleApprove}>
                 Approve
               </Button>
             </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleClose}>
+              <Button  className={buttonClasses} onClick={handleClose}>
                 Close
               </Button>
             </Col>
@@ -558,12 +482,12 @@ export default function ArticleNew() {
         return (
           <Row className="justify-content-between">
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleSave}>
+              <Button  className={buttonClasses} onClick={handleSave}>
                 Save
               </Button>
             </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleFinalize}>
+              <Button  className={buttonClasses} onClick={handleFinalize}>
                 Finalize
               </Button>
             </Col>
@@ -584,12 +508,12 @@ export default function ArticleNew() {
               </Button>
             </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleFinalize}>
+              <Button  className={buttonClasses} onClick={handleFinalize}>
                 Finalize
               </Button>
             </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleClose}>
+              <Button  className={buttonClasses} onClick={handleClose}>
                 Close
               </Button>
             </Col>
@@ -604,19 +528,13 @@ export default function ArticleNew() {
                 Save
               </Button>
             </Col>
-            {/* <Col xs={12} sm={6} md={4} lg={3}>
+            <Col xs={12} sm={6} md={4} lg={3}>
               <Button variant="warning" className={buttonClasses} onClick={handlePrDone}>
                 Pr Done
               </Button>
-            </Col> */}
-            <Col xs={12} sm={6} md={4} lg={3}>
-              <Button variant="warning" className={buttonClasses} onClick={handleFinalize}>
-                Finalize
-              </Button>
             </Col>
-
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleClose}>
+              <Button  className={buttonClasses} onClick={handleClose}>
                 Close
               </Button>
             </Col>
@@ -642,7 +560,7 @@ export default function ArticleNew() {
               </Button>
             </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button className={buttonClasses} onClick={handleClose}>
+              <Button  className={buttonClasses} onClick={handleClose}>
                 Close
               </Button>
             </Col>
@@ -662,7 +580,7 @@ export default function ArticleNew() {
         <legend>Select Details</legend>
         <Row className="mb-3">
           <Col xs={12} sm={6} md={2} className="mb-3">
-
+            
             <Form.Select
               aria-label="Product select example"
               onChange={handleProductChange}
@@ -760,8 +678,8 @@ export default function ArticleNew() {
           <Form.Control type="text" placeholder="Head" onChange={(e) => setFormData(prevState => ({ ...prevState, Head: e.target.value }))} />
         </FloatingLabel>
 
-        <FloatingLabel controlId="floatingPassword" label="Head deck" className="mb-3">
-          <Form.Control type="text" placeholder="Head deck" onChange={(e) => setFormData(prevState => ({ ...prevState, HeadDesk: e.target.value }))} />
+        <FloatingLabel controlId="floatingPassword" label="Head desk" className="mb-3">
+          <Form.Control type="text" placeholder="Head desk" onChange={(e) => setFormData(prevState => ({ ...prevState, HeadDesk: e.target.value }))} />
         </FloatingLabel>
 
         <Row className="mb-3">
@@ -782,7 +700,7 @@ export default function ArticleNew() {
           <Form.Control
             as="textarea"
             placeholder="Leave a comment here"
-            style={{ height: '300px', lineHeight: '1.8' }}
+            style={{ height: '300px' }}
             value={paragraph}
             onChange={handleParagraphChange}
           />
@@ -826,20 +744,12 @@ export default function ArticleNew() {
         )}
       </fieldset>
 
-      {loading &&
-        <div className="message-box-overlay">
-          <div className="Loading-box">
-            <Lottie animationData={Loading} loop={true} className="School_animate" />
-          </div>
-        </div>
-      }
 
-      {showAlert && <CustomAlert message={alertMessage} onClose={closeAlert} />}
-
-      <>
-        {renderButtons()}
-      </>
-
+      
+          <>
+            {renderButtons()}
+          </> 
+   
 
 
     </div>

@@ -15,7 +15,7 @@ router.post('/Zone_name_api',Controller.Zone_Name_api);
 router.post('/pagenumber',Controller.getPageNumber);
 
 router.post('/assignuser',Controller.assignUser);
-router.post('/assignuser',Controller.User_Id_api);
+router.post('/usercode',Controller.User_Id_api);
 
 router.post('/uploadImages',Controller.imageUploadHandler)
 router.post('/insertArticle',Controller.insertArticle)
@@ -48,6 +48,7 @@ router.get('/article/userfilterdetail', Controller.userfilterdetail);
 
 router.post('/revokePagez',Controller.fetchrevokepage)
 router.post('/updaterevoke',Controller.updatePageCompose)
+router.post('/pageactive',Controller.updateActiveStatus)
 
 
 

@@ -1,0 +1,36 @@
+/* FullPageImageWithButton.css */
+.login-container {
+    /* position: relative; */
+    width: 100%;
+    height: 100%;
+    /* background-image: url('../Assest/background.webp'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; */
+  }
+  
+  .login-center-button {
+    position: absolute;
+    top: 70%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  @media (max-width: 768px) {
+    .login-center-button {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .login-container {
+      background-size: contain;
+    }
+  }

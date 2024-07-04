@@ -1,0 +1,66 @@
+/* ProfilePage.css */
+.p-body {
+   
+    background: linear-gradient(320deg, #1962b0 0%, #ffffff 100%);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight:bold;
+  }
+  
+  .p-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .p-profile-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 40px 50px;
+    width: 100%;
+    max-width: 600px;
+    text-align: left;
+    font-size: 1.2rem;
+  }
+  
+  .p-profile-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #015BAB;
+    /* border-bottom: 2px solid #fda085; */
+    padding-bottom: 10px;
+    text-align: center;
+  }
+  
+  .p-profile-item {
+    margin: 20px 0;
+    color: #555;
+  }
+  
+  .p-profile-item strong {
+    color: #333;
+    display: inline-block;
+    width: 100px;
+  }
+  
+  @media (max-width: 768px) {
+    .p-profile-card {
+      width: 90%;
+      padding: 20px;
+    }
+  
+    .p-profile-title {
+      font-size: 2rem;
+    }
+  
+    .p-profile-item {
+      font-size: 1rem;
+    }
+  }
+  

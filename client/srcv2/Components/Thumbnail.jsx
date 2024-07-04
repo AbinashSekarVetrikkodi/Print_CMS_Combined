@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import pageNotFound from "../Assest/pageNotFound1.png";
 import "../Styles/Thumbnail.css";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
  
 const getCurrentDate = () => {
-  
   const now = new Date();
   const year = now.getFullYear();
   let month = now.getMonth() + 1;
@@ -16,38 +13,6 @@ const getCurrentDate = () => {
 };
  
 const Thumbnail = () => {
-
-  const navigate = useNavigate();
-
-  const emp_id = sessionStorage.getItem("emp_id");
-  const emp_name = sessionStorage.getItem("emp_name");
-
-  useEffect(() => {
-    if (emp_id) {
-      getDetail();
-    } else {
-      navigate("/");
-    }
-  }, [emp_id, navigate]);
-
-  const getDetail = async () => {
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_IPCONFIG}api/getUser`,
-        { User_Id: emp_id }
-      );
-      const user = response.data;
-
-      if (user.GROUP_CODE) {
-        sessionStorage.setItem("userRole", user.GROUP_CODE);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
-
   const initialIssueDate =
     sessionStorage.getItem("issueDate") || getCurrentDate();
   const [issueDate, setIssueDate] = useState(initialIssueDate);
@@ -396,44 +361,10 @@ const Thumbnail = () => {
     }
   };
  
-  // const fetchPDFs = async (imageUrls) => {
-  //   if (!Array.isArray(imageUrls) || imageUrls.length === 0) return;
- 
-  //   const urls = await Promise.all(
-  //     imageUrls.map(async (imageUrl) => {
-  //       const url = new URL(imageUrl);
-  //       const params = new URLSearchParams(url.search);
-  //       const formattedDate = params.get("date");
-  //       const zone = params.get("zone");
-  //       const product = params.get("product");
-  //       const page = params.get("page");
-  //       const edition = params.get("edition");
- 
-  //       try {
-  //         const response = await fetch(
-  //           `${process.env.REACT_APP_IPCONFIG}api/reporter/pdf?date=${formattedDate}&zone=${zone}&product=${product}&page=${page}&edition=${edition}`
-  //         );
-  //         if (response.ok) {
-  //           const pdfUrl = response.url;
-            
-  //           window.open(pdfUrl, "_blank"); // Open the PDF in a new tab
-  //         } else {
-  //           console.error(
-  //             `Failed to fetch PDF for page ${page}. Status: ${response.status}, ${response.statusText}`
-  //           );
-  //         }
-  //       } catch (error) {
-  //         console.error(`Error fetching PDF for page ${page}:`, error);
-  //       }
-  //     })
-  //   );
-  // };
- 
-
   const fetchPDFs = async (imageUrls) => {
     if (!Array.isArray(imageUrls) || imageUrls.length === 0) return;
-  
-    await Promise.all(
+ 
+    const urls = await Promise.all(
       imageUrls.map(async (imageUrl) => {
         const url = new URL(imageUrl);
         const params = new URLSearchParams(url.search);
@@ -442,23 +373,14 @@ const Thumbnail = () => {
         const product = params.get("product");
         const page = params.get("page");
         const edition = params.get("edition");
-  
+ 
         try {
           const response = await fetch(
             `${process.env.REACT_APP_IPCONFIG}api/reporter/pdf?date=${formattedDate}&zone=${zone}&product=${product}&page=${page}&edition=${edition}`
           );
-  
           if (response.ok) {
-            const blob = await response.blob();
-            const filename = `${product}_${formattedDate}_${zone}_${edition}_${page}.pdf`;
-  
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
+            const pdfUrl = response.url;
+            window.open(pdfUrl, "_blank"); // Open the PDF in a new tab
           } else {
             console.error(
               `Failed to fetch PDF for page ${page}. Status: ${response.status}, ${response.statusText}`
@@ -470,8 +392,7 @@ const Thumbnail = () => {
       })
     );
   };
-  
-
+ 
   const handleThumbnailClick = (imageUrl) => {
     if (imageUrl) {
       fetchPDFs([imageUrl]);

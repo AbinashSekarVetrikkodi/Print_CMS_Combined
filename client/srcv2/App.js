@@ -9,13 +9,8 @@ import Login from './Components/Login';
 import  Thumbnail from './Components/Thumbnail';
 import Revoke from './Components/Revoke';
 import Footer from './Components/Footer';
-import Testing from './Components/Testing';
-import ActivePage from './Components/ActivePage';
-import Storyassign from './Components/StoryAssign';
+import Storyassign from './Components/Storyassign';
 import ProfilePage from './Components/Profile';
-
-
-
 
  
  
@@ -38,12 +33,10 @@ const App = () => {
           <Route path='add-article' element={<ArticleNew />} />
           <Route path='article-editor/:articleId/:articleIssueDate' element={<ArticleEditor />} />
           <Route path='article-view' element={<ArticleView />} />
-          <Route path='user' element={<Userdata />} />          
+          <Route path='user' element={<Userdata />} />     
+          <Route path='storyassign' element={<Storyassign />} />     
           <Route path='thumbnail' element={<Thumbnail />} />
           <Route path='revoke' element={<Revoke />} />
-          <Route path='testing' element={<Testing />} />
-          <Route path='active-page' element={<ActivePage />} />
-          <Route path='storyassign' element={<Storyassign />} />
           <Route path='ProfilePage' element={<ProfilePage />} />
         </Route>
       </Routes>     

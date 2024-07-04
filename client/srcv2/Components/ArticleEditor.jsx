@@ -5,8 +5,6 @@ import { Container, Row, Col, Form, FloatingLabel, Button, Image } from 'react-b
 import { BsTrash, BsArrowsFullscreen, BsBackspace } from 'react-icons/bs';
 import { ToastContainer, toast } from 'react-toastify';
 import "../Styles/ArticleEditor.css";
-import Lottie from "lottie-react";
-import Loading from '../Assest/Loading.json'
 
 const ArticleEditor = () => {
 
@@ -18,6 +16,7 @@ const ArticleEditor = () => {
 
   useEffect(() => {
     const userRole = sessionStorage.getItem('userRole');
+    console.log(userRole);
     setRole(userRole);
   }, []);
 
@@ -26,10 +25,9 @@ const ArticleEditor = () => {
 
   const location = useLocation();
   const { view } = location.state || {};
-
+  console.log("view", view);
 
   const [article, setArticle] = useState([]);
-  // console.log("article value:",article);
 
   const [formData, setFormData] = useState({
     product: '',
@@ -62,7 +60,7 @@ const ArticleEditor = () => {
     Assigned_USER: '',
     approved_datetime: '',
   });
-  // console.log('form data :', formData);
+  console.log('form data :', formData);
 
   const [files, setFiles] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
@@ -76,26 +74,7 @@ const ArticleEditor = () => {
   const [assignUsers, setAssignUsers] = useState([]);
   const [pageNames, setPageNames] = useState([]);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const CustomAlert = ({ message, onClose }) => {
-    return (
-      <div className="message-box-overlay">
-        <div className="message-box">
-          <p>{message}</p>
-          <button onClick={onClose} className="btn btn-primary">OK</button>
-        </div>
-      </div>
-    );
-  };
-
-
-  const closeAlert = () => {
-    setShowAlert(false);
-    navigate('/article-view');
-  };
 
 
   // Function to format the date as YYYY-MM-DD
@@ -152,20 +131,6 @@ const ArticleEditor = () => {
         const zone_value = await zone_name(articleData[0].Zone_Code);
         const product_value = await product_name(articleData[0].Product);
 
-        // Fetch page names and assign users based on the initial layout and zone
-        let pageNamesResponse = [];
-        let assignUsersResponse = [];
-
-        if (articleData[0].desk_type) {
-          pageNamesResponse = await axios.post(`${process.env.REACT_APP_IPCONFIG}api/pagenumber`, { deskName: articleData[0].desk_type });
-          setPageNames(pageNamesResponse.data.map(page => page.page_id));
-        }
-
-        if (zone_value) {
-          assignUsersResponse = await axios.post(`${process.env.REACT_APP_IPCONFIG}api/assignuser`, { zoneName: zone_value });
-          setAssignUsers(assignUsersResponse.data.map(user => user.User_name));
-        }
-
         setFormData({
           ...formData,
           product: articleData[0].Product ? articleData[0].Product : '',
@@ -190,10 +155,11 @@ const ArticleEditor = () => {
           xml_name: articleData[0].xml_name ? articleData[0].xml_name : '',
           IssueDate: articleData[0].IssueDate ? formatDate(articleData[0].IssueDate) : '',
           caption: articleData[0].caption ? articleData[0].caption : '',
-          Assigned_USER: '',
+          // Assigned_USER: articleData[0].Assigned_USER ? articleData[0].Assigned_USER : '',
           SP_Sub_Editor: articleData[0].SP_Sub_Editor ? articleData[0].SP_Sub_Editor : '',
           SP_Editor: articleData[0].SP_Editor ? articleData[0].SP_Editor : '',
-          filenames: articleData[0].Image_Name ? articleData[0].Image_Name : '',
+          filenames:articleData[0].Image_Name ? articleData[0].Image_Name :'',
+
         });
 
         setParagraph(articleData[0].content);
@@ -208,6 +174,10 @@ const ArticleEditor = () => {
         // Fetch layouts based on the product
         const layoutsResponse = await axios.post(`${process.env.REACT_APP_IPCONFIG}api/getlayouts`, { productName: articleData[0].Product });
         setLayouts(layoutsResponse.data);
+
+        // Fetch assign users based on the zone
+        const assignUsersResponse = await axios.post(`${process.env.REACT_APP_IPCONFIG}api/assignuser`, { zoneName: zone_value });
+        setAssignUsers(assignUsersResponse.data.map(user => user.User_name));
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -268,7 +238,7 @@ const ArticleEditor = () => {
     const text = e.target.value;
     setParagraph(text);
     setWordCount(text.trim().split(/\s+/).length);
-    setFormData(prevState => ({ ...prevState, paragraph: text }));
+    setFormData(prevState => ({ ...prevState, Paragraph: text }));
   }, []);
 
   const handleImageChange = (e) => {
@@ -322,7 +292,6 @@ const ArticleEditor = () => {
   //--------------  update article   ---------------  
   const uploadImagesAndInsertArticle = useCallback(async (updatedFormData) => {
 
-    setLoading(true);
 
     // if (newFiles.length > 0) {
     //   const imageFormData = new FormData();
@@ -369,20 +338,11 @@ const ArticleEditor = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_IPCONFIG}api/updateArticle`, articleData);
       console.log('Article inserted successfully', response.data);
-      // alert("Article added successfully!");     
-      // navigate('/article-view');
-      // setAlertMessage('Article updated successfully !');
-      // setShowAlert(true);
+      alert("Article added successfully!");     
+      navigate('/article-view');
 
     } catch (error) {
       console.error('Error inserting article', error);
-      setLoading(false); 
-      return;
-    }
-    finally {
-      setLoading(false);
-      setAlertMessage('Article added successfully!');
-      setShowAlert(true);
     }
 
   }, [files, captions]);
@@ -401,7 +361,7 @@ const ArticleEditor = () => {
     if (!layout) {
       emptyFields.push("Layout Desk");
     }
-    if (!Assigned_USER || Assigned_USER == "Story To") {
+    if (!Assigned_USER) {
       emptyFields.push("Story To");
     }
     if (!Head) {
@@ -578,11 +538,6 @@ const ArticleEditor = () => {
               </Button>
             </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
-              <Button  className={buttonClasses} onClick={handleSubmit}>
-                Submit
-              </Button>
-            </Col>
-            <Col xs={12} sm={6} md={4} lg={3}>
               <Button  className={buttonClasses} onClick={handleApprove}>
                 Approve
               </Button>
@@ -645,11 +600,11 @@ const ArticleEditor = () => {
                 Save
               </Button>
             </Col>
-            {/* <Col xs={12} sm={6} md={4} lg={3}>
+            <Col xs={12} sm={6} md={4} lg={3}>
               <Button variant="warning" className={buttonClasses} onClick={handlePrDone}>
                 Pr Done
               </Button>
-            </Col> */}
+            </Col>
             <Col xs={12} sm={6} md={4} lg={3}>
               <Button variant="warning" className={buttonClasses} onClick={handleFinalize}>
                 Finalize
@@ -710,18 +665,6 @@ const ArticleEditor = () => {
               ))}
             </Form.Select>
           </Col>
-
-          <Col xs={12} sm={6} md={2} className="mb-3">
-            <Form.Select aria-label="Zone select example" onChange={handleZoneChange} value={formData.zone} className="form-select-sm custom-select">
-              <option>Zone</option>
-              {zones.map((zoneName, index) => (
-                <option key={index} value={zoneName}>
-                  {zoneName}
-                </option>
-              ))}
-            </Form.Select>
-          </Col>
-
           <Col xs={12} sm={6} md={2} className="mb-3">
             <Form.Select aria-label="Layout desk select example" onChange={handleLayoutChange} value={formData.layout} className="form-select-sm custom-select">
               <option>No Layout selected</option>
@@ -732,24 +675,16 @@ const ArticleEditor = () => {
               ))}
             </Form.Select>
           </Col>
-         
-
           <Col xs={12} sm={6} md={2} className="mb-3">
-            <Form.Select
-              aria-label="Page Name select example"
-              value={formData.pagename}
-              onChange={(e) => setFormData(prevState => ({ ...prevState, pagename: e.target.value }))}
-              className="form-select-sm custom-select"
-            >
-              <option>Page Name</option>
-              {pageNames.map((page, index) => (
-                <option key={index} value={page}>
-                  {page}
+            <Form.Select aria-label="Zone select example" onChange={handleZoneChange} value={formData.zone} className="form-select-sm custom-select">
+              <option>Zone</option>
+              {zones.map((zoneName, index) => (
+                <option key={index} value={zoneName}>
+                  {zoneName}
                 </option>
               ))}
             </Form.Select>
-          </Col> 
-
+          </Col>
           <Col xs={12} sm={6} md={2} className="mb-3">
             <Form.Select
               aria-label="Story To select example"
@@ -765,13 +700,24 @@ const ArticleEditor = () => {
               ))}
             </Form.Select>
           </Col>
-
- 
         </Row>
 
         <Row className="mb-3">
 
-          
+          {/* <Col xs={12} sm={6} md={3}>
+            <Form.Select
+              aria-label="Page Name select example"
+              value={formData.pagename}
+              onChange={(e) => setFormData(prevState => ({ ...prevState, pagename: e.target.value }))}
+            >
+              <option>Page Name</option>
+              {pageNames.map((page, index) => (
+                <option key={index} value={page}>
+                  {page}
+                </option>
+              ))}
+            </Form.Select>
+          </Col> */}
         </Row>
 
       </fieldset>
@@ -790,8 +736,8 @@ const ArticleEditor = () => {
           <Form.Control type="text" placeholder="Head" value={formData.Head} onChange={(e) => setFormData(prevState => ({ ...prevState, Head: e.target.value }))} />
         </FloatingLabel>
 
-        <FloatingLabel controlId="floatingPassword" label="Head deck" className="mb-3">
-          <Form.Control type="text" placeholder="Head deck" value={formData.HeadDesk} onChange={(e) => setFormData(prevState => ({ ...prevState, HeadDesk: e.target.value }))} />
+        <FloatingLabel controlId="floatingPassword" label="Head desk" className="mb-3">
+          <Form.Control type="text" placeholder="Head desk" value={formData.HeadDesk} onChange={(e) => setFormData(prevState => ({ ...prevState, HeadDesk: e.target.value }))} />
         </FloatingLabel>
 
         <Row className="mb-3">
@@ -813,7 +759,7 @@ const ArticleEditor = () => {
           <Form.Control
             as="textarea"
             placeholder="Leave a comment here"
-            style={{ height: '300px', lineHeight: '1.8' }}
+            style={{ height: '300px' }}
             value={formData.paragraph}
             onChange={handleParagraphChange}
           />
@@ -881,25 +827,12 @@ const ArticleEditor = () => {
         )}
       </fieldset>
 
-      {loading &&
-        <div className="message-box-overlay">
-          <div className="Loading-box">
-            <Lottie animationData={Loading} loop={true} className="School_animate" />
-          </div>
-        </div>
-      }
-
-      {showAlert && <CustomAlert message={alertMessage} onClose={closeAlert} />}
 
       {
         !view ?
           <>
             {renderButtons()}
-          </> : 
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
-          <h2>View Only</h2>
-          <Button variant="danger" onClick={handleClose}>Close</Button>
-        </div>
+          </> : <div>view only</div>
       }
 
 
