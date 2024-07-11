@@ -496,6 +496,14 @@ export default function ArticleView() {
     if (userRole === "SPEDT" && status === "S") return true;
     if (userRole === "SPEDT" && status === "D") return true;
 
+    if (userRole === "EDT" && (status === "P"))
+      return true;
+    if (userRole === "EDT" && status === "F") return false;
+    if (userRole === "EDT" && status === "A") return false;
+    if (userRole === "EDT" && status === "S") return false;
+    if (userRole === "EDT" && status === "D") return false;
+    if (userRole === "EDT" && status === "T") return false;
+
     if (userRole === "SUP" && (status === "T" || status === "S")) return true;
     if (userRole === "SUP" && status === "F") return true;
     if (userRole === "SUP" && status === "P") return true;
@@ -672,7 +680,7 @@ export default function ArticleView() {
                   <th>Assigned To</th>
                   <th>Reporter</th>
                   <th>Ch.Reporter</th>
-                  <th>Sub Editor</th>
+                  {/* <th>Sub Editor</th> */}
                   <th>SP Sub Editor</th>
                   <th>Editor</th>
                   <th>SP Editor</th>
@@ -702,14 +710,33 @@ export default function ArticleView() {
       <td className="ST-content">{article.Head}</td>
       <td>{getUserName(article.Created_user)}</td>
       <td>{getUserName(article.Assigned_USER)}</td>
-      <td>{getUserName(article.Report_User)}</td>
-      <td>{getUserName(article.Chief_Report_User)}</td>
-      <td>{getUserName(article.Sub_Editorial_User)}</td>
-      <td>{getUserName(article.SP_Sub_Editor)}</td>
-      <td>{getUserName(article.Editorial_User)}</td>
-      <td>{getUserName(article.SP_Editor)}</td>
-      <td>{article.Page_name}</td>
-      <td>{getStatusStage(article.Status)}</td>
+
+      {/* reporter details */}
+      <td className="timeBox"><div>{getUserName(article.Report_User)}</div><div className="timeBlock">{article.Report_User_time}</div></td>
+
+      {/* cheif reporter details */}
+      <td className="timeBox"><div>{getUserName(article.Chief_Report_User)}</div><div className="timeBlock">{article.Chief_Report_User_time}</div></td>
+
+      {/* Sub- Reporter details */}
+      {/* <td className="timeBox"><div>{getUserName(article.Sub_Editorial_User)}</div><div className="timeBlock">{article.Report_User_time}</div></td> */}
+
+      {/* SP-SUB-reporter details */}
+      <td className="timeBox"><div>{getUserName(article.SP_Sub_Editor)}</div><div className="timeBlock">{article.SP_Sub_Editor_time}</div></td>
+
+      {/* Editior details */}
+      <td className="timeBox"><div>{getUserName(article.Editorial_User)}</div><div className="timeBlock">{article.Editorial_User_time}</div></td>
+
+      {/* SP-Editior details */}
+      <td className="timeBox"><div>{getUserName(article.SP_Editor)}</div><div className="timeBlock">{article.SP_Editor_time}</div></td>
+
+
+      <td className="timeBox">{article.Page_name}</td>
+
+
+      <td className="timeBox">{getStatusStage(article.Status)}</td>
+
+
+      
       <td className="action-buttons">
         <Button
           className="action-btn"
