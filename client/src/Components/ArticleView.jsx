@@ -29,7 +29,8 @@ export default function ArticleView() {
   const storedZone = sessionStorage.getItem("selectedZone") || "";
   const storedLayout = sessionStorage.getItem("selectedLayout") || "";
   const storedDate = sessionStorage.getItem("selectedDate") || getTodayDate();
-  const storedProduct = sessionStorage.getItem("selectedProduct") || "Hindu Tamil Thisai";
+  const storedProduct =
+    sessionStorage.getItem("selectedProduct") || "Hindu Tamil Thisai";
   const storedStatus = sessionStorage.getItem("selectedStatus") || "";
 
   const getDetail = async () => {
@@ -48,8 +49,6 @@ export default function ArticleView() {
     }
   };
 
-
-
   const [formData, setFormData] = useState({
     product: storedProduct,
     layout: storedLayout,
@@ -59,32 +58,27 @@ export default function ArticleView() {
     status: storedStatus,
   });
 
-
   const validateForm = () => {
-    const { product, zone, layout, } = formData;
+    const { product, zone, layout } = formData;
     const emptyFields = [];
 
     if (!product) {
       emptyFields.push("Product");
     }
-    if (!zone || zone == 'No Zone selected') {
+    if (!zone || zone == "No Zone selected") {
       emptyFields.push("Zone");
     }
-    if (!layout || layout == 'No Layout selected') {
+    if (!layout || layout == "No Layout selected") {
       emptyFields.push("Layout Desk");
     }
 
-
     if (emptyFields.length > 0) {
-      alert(`Please fill in all mandatory fields: ${emptyFields.join(', ')}.`);
+      alert(`Please fill in all mandatory fields: ${emptyFields.join(", ")}.`);
       return false;
     }
 
     return true;
   };
-
-
-
 
   const [products, setProducts] = useState([]);
   const [layouts, setLayouts] = useState(storedLayout ? [storedLayout] : []);
@@ -144,7 +138,6 @@ export default function ArticleView() {
 
     fetchUsersData();
   }, []);
-
 
   useEffect(() => {
     const fetchAssignValue = async () => {
@@ -233,20 +226,20 @@ export default function ArticleView() {
   };
 
   const refzones = [
-    { Zone_Code: 'BG', Zone_Name: 'Dharmapuri' },
-    { Zone_Code: 'CB', Zone_Name: 'Coimbatore' },
-    { Zone_Code: 'CH', Zone_Name: 'Chennai' },
-    { Zone_Code: 'DE', Zone_Name: 'Tanjavur' },
-    { Zone_Code: 'DG', Zone_Name: 'Ramnad' },
-    { Zone_Code: 'KP', Zone_Name: 'Kancheepuram' },
-    { Zone_Code: 'MA', Zone_Name: 'Madurai' },
-    { Zone_Code: 'PY', Zone_Name: 'Puducherry' },
-    { Zone_Code: 'SM', Zone_Name: 'Salem' },
-    { Zone_Code: 'TI', Zone_Name: 'Tirunelveli' },
-    { Zone_Code: 'TU', Zone_Name: 'Tirupur' },
-    { Zone_Code: 'TV', Zone_Name: 'Thiruvananthapuram' },
-    { Zone_Code: 'TY', Zone_Name: 'Tiruchirapalli' },
-    { Zone_Code: 'VE', Zone_Name: 'Vellore' }
+    { Zone_Code: "BG", Zone_Name: "Dharmapuri" },
+    { Zone_Code: "CB", Zone_Name: "Coimbatore" },
+    { Zone_Code: "CH", Zone_Name: "Chennai" },
+    { Zone_Code: "DE", Zone_Name: "Tanjavur" },
+    { Zone_Code: "DG", Zone_Name: "Ramnad" },
+    { Zone_Code: "KP", Zone_Name: "Kancheepuram" },
+    { Zone_Code: "MA", Zone_Name: "Madurai" },
+    { Zone_Code: "PY", Zone_Name: "Puducherry" },
+    { Zone_Code: "SM", Zone_Name: "Salem" },
+    { Zone_Code: "TI", Zone_Name: "Tirunelveli" },
+    { Zone_Code: "TU", Zone_Name: "Tirupur" },
+    { Zone_Code: "TV", Zone_Name: "Thiruvananthapuram" },
+    { Zone_Code: "TY", Zone_Name: "Tiruchirapalli" },
+    { Zone_Code: "VE", Zone_Name: "Vellore" },
   ];
 
   const handleZoneChange = async (e) => {
@@ -270,33 +263,32 @@ export default function ArticleView() {
     fetchAssignuserValues();
   };
 
+  const fetchAssignuserValues = async () => {
+    const selectedZone = sessionStorage.getItem("selectedZone");
+    if (!selectedZone) {
+      console.error("No selected zone in session storage");
+      return;
+    }
 
-  
-    const fetchAssignuserValues = async () => {
-      const selectedZone = sessionStorage.getItem('selectedZone');
-      if (!selectedZone) {
-        console.error('No selected zone in session storage');
-        return;
-      }
+    const refselectedZone = refzones.find(
+      (zone) => zone.Zone_Name === selectedZone
+    );
+    if (!refselectedZone) {
+      console.error("Selected zone not found in reference zones");
+      return;
+    }
 
-      const refselectedZone = refzones.find(zone => zone.Zone_Name === selectedZone);
-      if (!refselectedZone) {
-        console.error('Selected zone not found in reference zones');
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_IPCONFIG}api/article/userfilterdetail`,
-          { params: { zonecode: refselectedZone.Zone_Code } }
-        );
-        setAssignUsers(response.data);
-        console.log("responsive data" , response.data);
-      } catch (error) {
-        console.error('Error fetching assign values:', error);
-      }
-    };
-  
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_IPCONFIG}api/article/userfilterdetail`,
+        { params: { zonecode: refselectedZone.Zone_Code } }
+      );
+      setAssignUsers(response.data);
+      console.log("responsive data", response.data);
+    } catch (error) {
+      console.error("Error fetching assign values:", error);
+    }
+  };
 
   const handleLayoutChange = async (e) => {
     const selectedLayout = e.target.value;
@@ -411,7 +403,6 @@ export default function ArticleView() {
         fetchAssignuserValues();
         setSelectedUser("");
         setFilteredNews(fetchedNews);
-        
       } catch (error) {
         console.error("Error fetching news", error);
       }
@@ -465,11 +456,12 @@ export default function ArticleView() {
       (status === "P" || status === "S" || status === "D" || status === "A")
     )
       return false;
-    if (userRole === "RPT" && status === "F" && emp_id === createduser) return true;
+    if (userRole === "RPT" && status === "F" && emp_id === createduser)
+      return true;
     // console.log("emp_id", emp_id)
     // console.log("createduser", createduser)// Only RPT can edit when status is "F"
-    if (userRole === "RPT" && status === "T" && emp_id === createduser) return true; // RPT can edit when status is "T"
-
+    if (userRole === "RPT" && status === "T" && emp_id === createduser)
+      return true; // RPT can edit when status is "T"
 
     if (
       userRole === "CHRPT" &&
@@ -496,8 +488,7 @@ export default function ArticleView() {
     if (userRole === "SPEDT" && status === "S") return true;
     if (userRole === "SPEDT" && status === "D") return true;
 
-    if (userRole === "EDT" && (status === "P"))
-      return true;
+    if (userRole === "EDT" && status === "P") return true;
     if (userRole === "EDT" && status === "F") return false;
     if (userRole === "EDT" && status === "A") return false;
     if (userRole === "EDT" && status === "S") return false;
@@ -521,7 +512,7 @@ export default function ArticleView() {
           <Row
             className="mb-3"
             style={{
-              justifyContent: "space-evenly"
+              justifyContent: "space-evenly",
             }}
           >
             <Col xs={12} sm={6} md={2} className="mb-3">
@@ -599,30 +590,36 @@ export default function ArticleView() {
               justifyContent: "flex-start",
               display: "flex",
               alignItems: "center",
-              marginLeft: '2%'
+              marginLeft: "2%",
             }}
           >
-            <Col xs={12} sm={6} md={2} className="mb-3" style={{ width: 'max-content', }}>
+            <Col
+              xs={12}
+              sm={6}
+              md={2}
+              className="mb-3"
+              style={{ width: "max-content" }}
+            >
               <div
                 style={{
                   fontSize: "larger",
                   fontWeight: "bold",
                   color: "#015BAB",
-                  width: 'max-content',
-                  fontStyle: 'italic',
-                  fontSize: '1rem',
+                  width: "max-content",
+                  fontStyle: "italic",
+                  fontSize: "1rem",
                 }}
               >
                 Advanced Filter :
               </div>
             </Col>
-            <Col xs={12} sm={6} md={2} className="mb-3" >
+            <Col xs={12} sm={6} md={2} className="mb-3">
               <Form.Select
                 aria-label="Status select example"
                 onChange={handleStatusChange}
                 value={formData.status}
                 className="form-select-sm custom-select"
-                style={{ fontStyle: 'italic', fontSize: '1rem' }}
+                style={{ fontStyle: "italic", fontSize: "1rem" }}
               >
                 <option value="">Select Status</option>
                 {statuses.map((status, index) => (
@@ -638,7 +635,7 @@ export default function ArticleView() {
                 aria-label="User select example"
                 onChange={handleUserChange}
                 className="form-select-sm custom-select"
-                style={{ fontStyle: 'italic', fontSize: '1rem' }}
+                style={{ fontStyle: "italic", fontSize: "1rem" }}
               >
                 <option value="">Select User</option>
                 {assignUsers.map((user, index) => (
@@ -657,8 +654,9 @@ export default function ArticleView() {
                   checked={showAssignedOnly}
                   onChange={handleShowAssignedOnlyChange}
                   style={{
-                    width: "100%", fontStyle: 'italic',
-                    fontSize: '1rem',
+                    width: "100%",
+                    fontStyle: "italic",
+                    fontSize: "1rem",
                   }}
                 />
               </Form.Group>
@@ -705,72 +703,100 @@ export default function ArticleView() {
                 <th></th>
           </tr> */}
                 {filteredNews.length > 0 ? (
-  [...filteredNews].reverse().map((article, index) => (
-    <tr key={index}>
-      <td className="ST-content">{article.Head}</td>
-      <td>{getUserName(article.Created_user)}</td>
-      <td>{getUserName(article.Assigned_USER)}</td>
+                  [...filteredNews].reverse().map((article, index) => (
+                    <tr key={index}>
+                      <td className="ST-content">{article.Head}</td>
+                      <td>{getUserName(article.Created_user)}</td>
+                      <td>{getUserName(article.Assigned_USER)}</td>
 
-      {/* reporter details */}
-      <td className="timeBox"><div>{getUserName(article.Report_User)}</div><div className="timeBlock">{article.Report_User_time}</div></td>
+                      {/* reporter details */}
+                      <td className="timeBox">
+                        <div>{getUserName(article.Report_User)}</div>
+                        <div className="timeBlock">
+                          {article.Report_User_time}
+                        </div>
+                      </td>
 
-      {/* cheif reporter details */}
-      <td className="timeBox"><div>{getUserName(article.Chief_Report_User)}</div><div className="timeBlock">{article.Chief_Report_User_time}</div></td>
+                      {/* cheif reporter details */}
+                      <td className="timeBox">
+                        <div>{getUserName(article.Chief_Report_User)}</div>
+                        <div className="timeBlock">
+                          {article.Chief_Report_User_time}
+                        </div>
+                      </td>
 
-      {/* Sub- Reporter details */}
-      {/* <td className="timeBox"><div>{getUserName(article.Sub_Editorial_User)}</div><div className="timeBlock">{article.Report_User_time}</div></td> */}
+                      {/* Sub- Reporter details */}
+                      {/* <td className="timeBox"><div>{getUserName(article.Sub_Editorial_User)}</div><div className="timeBlock">{article.Report_User_time}</div></td> */}
 
-      {/* SP-SUB-reporter details */}
-      <td className="timeBox"><div>{getUserName(article.SP_Sub_Editor)}</div><div className="timeBlock">{article.SP_Sub_Editor_time}</div></td>
+                      {/* SP-SUB-reporter details */}
+                      <td className="timeBox">
+                        <div>{getUserName(article.SP_Sub_Editor)}</div>
+                        <div className="timeBlock">
+                          {article.SP_Sub_Editor_time}
+                        </div>
+                      </td>
 
-      {/* Editior details */}
-      <td className="timeBox"><div>{getUserName(article.Editorial_User)}</div><div className="timeBlock">{article.Editorial_User_time}</div></td>
+                      {/* Editior details */}
+                      <td className="timeBox">
+                        <div>{getUserName(article.Editorial_User)}</div>
+                        <div className="timeBlock">
+                          {article.Editorial_User_time}
+                        </div>
+                      </td>
 
-      {/* SP-Editior details */}
-      <td className="timeBox"><div>{getUserName(article.SP_Editor)}</div><div className="timeBlock">{article.SP_Editor_time}</div></td>
+                      {/* SP-Editior details */}
+                      <td className="timeBox">
+                        <div>{getUserName(article.SP_Editor)}</div>
+                        <div className="timeBlock">
+                          {article.SP_Editor_time}
+                        </div>
+                      </td>
 
+                      <td className="timeBox">{article.Page_name}</td>
 
-      <td className="timeBox">{article.Page_name}</td>
+                      <td className="timeBox">
+                        {getStatusStage(article.Status)}
+                      </td>
 
-
-      <td className="timeBox">{getStatusStage(article.Status)}</td>
-
-
-      
-      <td className="action-buttons">
-        <Button
-          className="action-btn"
-          variant="primary"
-          size="sm"
-          onClick={() =>
-            articleView(
-              article.parent_object_id,
-              article.IssueDate,
-              "view"
-            )
-          }
-        >
-          View
-        </Button>
-        {canEdit(userRole, article.Status, article.Created_user, emp_id) && (
-          <Button
-            className="action-btn"
-            variant="warning"
-            size="sm"
-            onClick={() =>
-              articleView(
-                article.parent_object_id,
-                article.IssueDate
-              )
-            }
-          >
-            Edit
-          </Button>
-        )}
-      </td>
-    </tr>
-  ))
-) : (
+                      <td className="action-buttons">
+                        <Button
+                          className="action-btn"
+                          variant="primary"
+                          size="sm"
+                          onClick={() =>
+                            articleView(
+                              article.parent_object_id,
+                              article.IssueDate,
+                              "view"
+                            )
+                          }
+                        >
+                          View
+                        </Button>
+                        {canEdit(
+                          userRole,
+                          article.Status,
+                          article.Created_user,
+                          emp_id
+                        ) && (
+                          <Button
+                            className="action-btn"
+                            variant="warning"
+                            size="sm"
+                            onClick={() =>
+                              articleView(
+                                article.parent_object_id,
+                                article.IssueDate
+                              )
+                            }
+                          >
+                            Edit
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
                   <tr>
                     <td colSpan="12" className="text-center">
                       No Articles Found
